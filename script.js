@@ -1,696 +1,950 @@
-// ========================================
-// Shalaby OMS - JavaScript
-// Version: 1.0
-// ========================================
-
-'use strict';
-
-// ========================================
-// Global Variables
-// ========================================
-let currentOrder = null;
-
-// ========================================
-// Navigation Functions
-// ========================================
-
-/**
- * Navigate to a specific page
- * @param {string} page - The page URL to navigate to
- */
-function navigateTo(page) {
-    // Add exit animation
-    document.body.style.opacity = '0';
+/* ========================================
+   CSS Variables
+   ======================================== */
+:root {
+    /* Colors */
+    --color-primary: #D32F2F;
+    --color-primary-dark: #B71C1C;
+    --color-primary-light: #EF5350;
+    --color-dark: #111111;
+    --color-white: #FFFFFF;
+    --color-background: #F6F7FB;
+    --color-text: #2C3E50;
+    --color-text-light: #6C757D;
+    --color-border: #E0E6ED;
+    --color-success: #28A745;
+    --color-warning: #FFC107;
+    --color-danger: #DC3545;
+    --color-info: #17A2B8;
     
-    setTimeout(() => {
-        window.location.href = page;
-    }, 200);
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+    --gradient-overlay: linear-gradient(135deg, rgba(211, 47, 47, 0.05) 0%, rgba(183, 28, 28, 0.05) 100%);
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-xxl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-round: 50%;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Glass Effect */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-blur: 10px;
 }
 
-// ========================================
-// Page Load Animations
-// ========================================
-window.addEventListener('DOMContentLoaded', () => {
-    // Fade in page on load
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.3s ease';
-    
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-    
-    // Initialize page-specific functionality
-    initializePage();
-});
+/* ========================================
+   Global Reset & Base Styles
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-// ========================================
-// Initialize Page Functions
-// ========================================
-function initializePage() {
-    const currentPage = getCurrentPage();
-    
-    switch(currentPage) {
-        case 'index':
-            initializeHomePage();
-            break;
-        case 'new-order':
-            initializeNewOrderPage();
-            break;
-        case 'update-order':
-            initializeUpdateOrderPage();
-            break;
+body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-overlay);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ========================================
+   Typography
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-dark);
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-primary);
+    transition: var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+}
+
+/* ========================================
+   Glass Effect
+   ======================================== */
+.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
 
-/**
- * Get current page name
- * @returns {string} Page name
- */
-function getCurrentPage() {
-    const path = window.location.pathname;
-    const page = path.split('/').pop().replace('.html', '') || 'index';
-    return page;
-}
-
-// ========================================
-// Home Page Functions
-// ========================================
-function initializeHomePage() {
-    console.log('Home page initialized');
-    
-    // Add hover effects to cards
-    const cards = document.querySelectorAll('.action-card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-10px)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0)';
-        });
-    });
-}
-
-// ========================================
-// New Order Page Functions
-// ========================================
-function initializeNewOrderPage() {
-    console.log('New Order page initialized');
-    
-    const form = document.getElementById('newOrderForm');
-    
-    if (form) {
-        form.addEventListener('submit', handleNewOrderSubmit);
-        
-        // Add input validation
-        const inputs = form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('blur', validateInput);
-            input.addEventListener('input', clearValidationError);
-        });
-        
-        // Phone number formatting
-        const phoneInput = document.getElementById('customerPhone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', formatPhoneNumber);
-        }
-        
-        // Price formatting
-        const priceInput = document.getElementById('price');
-        if (priceInput) {
-            priceInput.addEventListener('blur', formatPrice);
-        }
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/**
- * Handle new order form submission
- * @param {Event} e - Form submit event
- */
-function handleNewOrderSubmit(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    
-    // Validate form
-    if (!validateForm(form)) {
-        return;
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
     }
-    
-    // Get form data
-    const formData = getFormData(form);
-    
-    console.log('New Order Data:', formData);
-    
-    // TODO: Send data to Google Sheets API
-    // saveOrderToSheet(formData);
-    
-    // Show success modal
-    showSuccessModal();
-}
-
-/**
- * Get form data as object
- * @param {HTMLFormElement} form - The form element
- * @returns {Object} Form data
- */
-function getFormData(form) {
-    const formData = new FormData(form);
-    const data = {};
-    
-    // Get all form fields
-    data.customerName = document.getElementById('customerName')?.value || '';
-    data.customerPhone = document.getElementById('customerPhone')?.value || '';
-    data.governorate = document.getElementById('governorate')?.value || '';
-    data.address = document.getElementById('address')?.value || '';
-    data.product = document.getElementById('product')?.value || '';
-    data.quantity = document.getElementById('quantity')?.value || '';
-    data.price = document.getElementById('price')?.value || '';
-    data.shippingCompany = document.getElementById('shippingCompany')?.value || '';
-    data.paymentMethod = document.getElementById('paymentMethod')?.value || '';
-    data.orderSource = document.getElementById('orderSource')?.value || '';
-    data.notes = document.getElementById('notes')?.value || '';
-    data.timestamp = new Date().toISOString();
-    data.status = 'جديد';
-    
-    return data;
-}
-
-/**
- * Validate entire form
- * @param {HTMLFormElement} form - The form to validate
- * @returns {boolean} Is form valid
- */
-function validateForm(form) {
-    let isValid = true;
-    
-    const requiredFields = form.querySelectorAll('[required]');
-    
-    requiredFields.forEach(field => {
-        if (!validateInput({ target: field })) {
-            isValid = false;
-        }
-    });
-    
-    return isValid;
-}
-
-/**
- * Validate single input
- * @param {Event} e - Input blur event
- * @returns {boolean} Is input valid
- */
-function validateInput(e) {
-    const input = e.target;
-    const value = input.value.trim();
-    
-    // Check if required
-    if (input.hasAttribute('required') && !value) {
-        showValidationError(input);
-        return false;
-    }
-    
-    // Check phone number
-    if (input.id === 'customerPhone' && value) {
-        if (!isValidPhone(value)) {
-            showValidationError(input, 'رقم التليفون غير صحيح');
-            return false;
-        }
-    }
-    
-    // Check price
-    if (input.id === 'price' && value) {
-        if (parseFloat(value) <= 0) {
-            showValidationError(input, 'السعر يجب أن يكون أكبر من صفر');
-            return false;
-        }
-    }
-    
-    // Check quantity
-    if (input.id === 'quantity' && value) {
-        if (parseInt(value) <= 0) {
-            showValidationError(input, 'الكمية يجب أن تكون أكبر من صفر');
-            return false;
-        }
-    }
-    
-    clearValidationError(e);
-    return true;
-}
-
-/**
- * Check if phone number is valid
- * @param {string} phone - Phone number to validate
- * @returns {boolean} Is valid
- */
-function isValidPhone(phone) {
-    const phoneRegex = /^(010|011|012|015)\d{8}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
-}
-
-/**
- * Show validation error
- * @param {HTMLElement} input - Input element
- * @param {string} message - Error message (optional)
- */
-function showValidationError(input, message = null) {
-    input.classList.add('is-invalid');
-    
-    if (message) {
-        const feedback = input.parentElement.querySelector('.invalid-feedback');
-        if (feedback) {
-            feedback.textContent = message;
-        }
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
 }
 
-/**
- * Clear validation error
- * @param {Event} e - Input event
- */
-function clearValidationError(e) {
-    const input = e.target;
-    input.classList.remove('is-invalid');
-}
-
-/**
- * Format phone number
- * @param {Event} e - Input event
- */
-function formatPhoneNumber(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    
-    if (value.length > 11) {
-        value = value.substr(0, 11);
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
     }
-    
-    e.target.value = value;
-}
-
-/**
- * Format price
- * @param {Event} e - Input blur event
- */
-function formatPrice(e) {
-    const value = parseFloat(e.target.value);
-    
-    if (!isNaN(value)) {
-        e.target.value = value.toFixed(2);
+    50% {
+        transform: scale(1.05);
     }
 }
 
-/**
- * Show success modal
- */
-function showSuccessModal() {
-    const modal = new bootstrap.Modal(document.getElementById('successModal'));
-    modal.show();
+.animate-fade-in {
+    animation: fadeIn 0.6s ease;
 }
 
-/**
- * Close modal and reset form
- */
-function closeModalAndReset() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
-    modal.hide();
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease;
+}
+
+.animate-scale {
+    animation: scaleIn 0.4s ease;
+}
+
+/* ========================================
+   Main Container (Home Page)
+   ======================================== */
+.main-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+/* ========================================
+   Logo Section
+   ======================================== */
+.logo-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.logo-wrapper {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(var(--shadow-md));
+    transition: var(--transition-normal);
+}
+
+.main-logo:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* ========================================
+   Title Section
+   ======================================== */
+.title-section {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.main-title {
+    font-size: 3rem;
+    font-weight: 900;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: -1px;
+}
+
+.main-subtitle {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    font-weight: 400;
+}
+
+/* ========================================
+   Cards Container
+   ======================================== */
+.cards-container {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: var(--spacing-xl);
+}
+
+/* ========================================
+   Action Cards
+   ======================================== */
+.action-card {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: var(--transition-normal);
+    z-index: 0;
+}
+
+.action-card:hover::before {
+    opacity: 0.05;
+}
+
+.action-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+}
+
+.action-card:active {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 4rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    position: relative;
+    z-index: 1;
+    transition: var(--transition-normal);
+}
+
+.action-card:hover .card-icon {
+    transform: scale(1.1);
+    animation: pulse 1s infinite;
+}
+
+.card-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-sm);
+    position: relative;
+    z-index: 1;
+}
+
+.card-description {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.card-arrow {
+    position: absolute;
+    bottom: var(--spacing-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    opacity: 0;
+    transition: var(--transition-normal);
+    z-index: 1;
+}
+
+.action-card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+.main-footer {
+    text-align: center;
+    margin-top: auto;
+    padding-top: var(--spacing-lg);
+}
+
+.footer-version {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xs);
+}
+
+.footer-credits {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+}
+
+.footer-credits .highlight {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* ========================================
+   Page Header
+   ======================================== */
+.page-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: var(--spacing-md) 0;
+    margin-bottom: var(--spacing-xl);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.btn-back {
+    background: var(--color-white);
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-dark);
+    font-size: 1.25rem;
+}
+
+.btn-back:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+    transform: translateX(5px);
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0;
+    flex: 1;
+    text-align: center;
+}
+
+.header-spacer {
+    width: 45px;
+}
+
+/* ========================================
+   Page Container
+   ======================================== */
+.page-container {
+    padding: 0 0 var(--spacing-xxl) 0;
+}
+
+/* ========================================
+   Form Card
+   ======================================== */
+.form-card {
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ========================================
+   Form Sections
+   ======================================== */
+.form-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.section-title i {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+}
+
+/* ========================================
+   Form Elements
+   ======================================== */
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.form-label i {
+    color: var(--color-primary);
+    font-size: 1rem;
+}
+
+.form-control,
+.form-select {
+    height: 50px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0 var(--spacing-md);
+    font-size: 1rem;
+    font-family: 'Cairo', sans-serif;
+    transition: var(--transition-fast);
+    background: var(--color-white);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(211, 47, 47, 0.1);
+    outline: none;
+}
+
+textarea.form-control {
+    height: auto;
+    padding: var(--spacing-md);
+    resize: vertical;
+}
+
+.form-control::placeholder {
+    color: var(--color-text-light);
+    opacity: 0.7;
+}
+
+.invalid-feedback {
+    display: none;
+    color: var(--color-danger);
+    font-size: 0.875rem;
+    margin-top: var(--spacing-xs);
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--color-danger);
+}
+
+.form-control.is-invalid ~ .invalid-feedback,
+.form-select.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+.btn {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.5rem;
+    transition: var(--transition-fast);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: var(--color-white);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
+
+.btn-submit {
+    width: 100%;
+    max-width: 400px;
+    margin: var(--spacing-lg) auto 0;
+    display: flex;
+}
+
+/* ========================================
+   Form Actions
+   ======================================== */
+.form-actions {
+    text-align: center;
+    padding-top: var(--spacing-lg);
+}
+
+/* ========================================
+   Search Card
+   ======================================== */
+.search-card {
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* ========================================
+   Order Details Card
+   ======================================== */
+.order-details-card {
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+/* ========================================
+   Order Info Grid
+   ======================================== */
+.order-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.info-item {
+    background: var(--color-white);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.info-label i {
+    color: var(--color-primary);
+}
+
+.info-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+/* ========================================
+   Status Section
+   ======================================== */
+.current-status-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.status-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.status-title i {
+    color: var(--color-primary);
+}
+
+.status-badge-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 1rem;
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.status-badge.status-new {
+    background: var(--color-info);
+}
+
+.status-badge.status-reviewing {
+    background: var(--color-warning);
+}
+
+.status-badge.status-preparing {
+    background: #6F42C1;
+}
+
+.status-badge.status-shipped {
+    background: #007BFF;
+}
+
+.status-badge.status-delivered {
+    background: var(--color-success);
+}
+
+.status-badge.status-cancelled {
+    background: var(--color-danger);
+}
+
+.status-badge.status-returned {
+    background: #6C757D;
+}
+
+/* ========================================
+   Update Status Section
+   ======================================== */
+.update-status-section {
+    margin-top: var(--spacing-xl);
+}
+
+/* ========================================
+   Loading Spinner
+   ======================================== */
+.loading-spinner {
+    text-align: center;
+    padding: var(--spacing-xxl);
+}
+
+.loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.loading-spinner p {
+    margin-top: var(--spacing-md);
+    color: var(--color-text-light);
+    font-weight: 600;
+}
+
+/* ========================================
+   No Results
+   ======================================== */
+.no-results {
+    text-align: center;
+    padding: var(--spacing-xxl);
+    border-radius: var(--radius-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.no-results p {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   Modal
+   ======================================== */
+.modal-content {
+    border: none;
+    border-radius: var(--radius-xl);
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: var(--color-success);
+}
+
+.success-icon i {
+    animation: scaleIn 0.5s ease;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .main-title {
+        font-size: 2.5rem;
+    }
     
-    // Reset form
-    const form = document.getElementById('newOrderForm');
-    if (form) {
-        form.reset();
-        
-        // Clear validation
-        form.querySelectorAll('.is-invalid').forEach(input => {
-            input.classList.remove('is-invalid');
-        });
+    .main-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    .action-card {
+        min-height: 240px;
+        padding: var(--spacing-lg);
+    }
+    
+    .card-icon {
+        font-size: 3.5rem;
+    }
+    
+    .card-title {
+        font-size: 1.5rem;
     }
 }
 
-// ========================================
-// Update Order Page Functions
-// ========================================
-function initializeUpdateOrderPage() {
-    console.log('Update Order page initialized');
+/* Mobile */
+@media (max-width: 768px) {
+    :root {
+        --spacing-xl: 2rem;
+        --spacing-xxl: 3rem;
+    }
     
-    const searchForm = document.querySelector('.search-card');
-    const updateForm = document.getElementById('updateStatusForm');
+    .main-container {
+        padding: var(--spacing-md);
+    }
     
-    // Add enter key support for search
-    const searchInputs = document.querySelectorAll('#searchOrderId, #searchPhone');
-    searchInputs.forEach(input => {
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                searchOrder();
-            }
-        });
-    });
+    .main-title {
+        font-size: 2rem;
+    }
     
-    if (updateForm) {
-        updateForm.addEventListener('submit', handleUpdateStatus);
+    .main-subtitle {
+        font-size: 1rem;
+    }
+    
+    .logo-wrapper {
+        width: 110px;
+        height: 110px;
+    }
+    
+    .action-card {
+        min-height: 200px;
+        padding: var(--spacing-md);
+    }
+    
+    .card-icon {
+        font-size: 3rem;
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+    }
+    
+    .card-description {
+        font-size: 0.9rem;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .form-card,
+    .search-card,
+    .order-details-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .section-title {
+        font-size: 1.125rem;
+    }
+    
+    .order-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-submit {
+        max-width: 100%;
     }
 }
 
-/**
- * Search for order
- */
-function searchOrder() {
-    const orderId = document.getElementById('searchOrderId')?.value.trim();
-    const phone = document.getElementById('searchPhone')?.value.trim();
-    
-    // Validate search input
-    if (!orderId && !phone) {
-        alert('من فضلك أدخل رقم الأوردر أو رقم التليفون');
-        return;
+/* Small Mobile */
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 1.75rem;
     }
     
-    // Show loading
-    showLoading();
-    
-    // Simulate API call
-    setTimeout(() => {
-        // TODO: Replace with actual API call
-        // searchOrderInSheet(orderId, phone);
-        
-        // Mock data for demonstration
-        const mockOrder = {
-            orderId: orderId || '12345',
-            orderDate: new Date().toLocaleDateString('ar-EG'),
-            customerName: 'محمد أحمد',
-            phone: phone || '01012345678',
-            product: 'منتج تجريبي',
-            price: '500.00 جنيه',
-            address: 'القاهرة، مدينة نصر، شارع عباس العقاد',
-            shippingCompany: 'أرامكس',
-            paymentMethod: 'كاش عند الاستلام',
-            status: 'جديد'
-        };
-        
-        displayOrderDetails(mockOrder);
-        hideLoading();
-    }, 1500);
-}
-
-/**
- * Display order details
- * @param {Object} order - Order data
- */
-function displayOrderDetails(order) {
-    currentOrder = order;
-    
-    // Hide no results
-    document.getElementById('noResults').style.display = 'none';
-    
-    // Populate order details
-    document.getElementById('displayOrderId').textContent = order.orderId;
-    document.getElementById('displayOrderDate').textContent = order.orderDate;
-    document.getElementById('displayCustomerName').textContent = order.customerName;
-    document.getElementById('displayPhone').textContent = order.phone;
-    document.getElementById('displayProduct').textContent = order.product;
-    document.getElementById('displayPrice').textContent = order.price;
-    document.getElementById('displayAddress').textContent = order.address;
-    document.getElementById('displayShipping').textContent = order.shippingCompany;
-    document.getElementById('displayPayment').textContent = order.paymentMethod;
-    
-    // Update status badge
-    const statusBadge = document.getElementById('currentStatusBadge');
-    statusBadge.textContent = order.status;
-    statusBadge.className = 'status-badge ' + getStatusClass(order.status);
-    
-    // Show order details card
-    const orderCard = document.getElementById('orderDetailsCard');
-    orderCard.style.display = 'block';
-    
-    // Scroll to results
-    setTimeout(() => {
-        orderCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-}
-
-/**
- * Get status CSS class
- * @param {string} status - Status text
- * @returns {string} CSS class
- */
-function getStatusClass(status) {
-    const statusMap = {
-        'جديد': 'status-new',
-        'جارى المراجعة': 'status-reviewing',
-        'جارى التجهيز': 'status-preparing',
-        'تم الشحن': 'status-shipped',
-        'تم التسليم': 'status-delivered',
-        'ملغى': 'status-cancelled',
-        'مرتجع': 'status-returned'
-    };
-    
-    return statusMap[status] || '';
-}
-
-/**
- * Handle update status form submission
- * @param {Event} e - Form submit event
- */
-function handleUpdateStatus(e) {
-    e.preventDefault();
-    
-    const newStatus = document.getElementById('newStatus')?.value;
-    
-    if (!newStatus) {
-        alert('من فضلك اختر الحالة الجديدة');
-        return;
+    .form-card,
+    .search-card,
+    .order-details-card {
+        padding: var(--spacing-md);
     }
     
-    if (!currentOrder) {
-        alert('لم يتم اختيار أوردر');
-        return;
-    }
-    
-    console.log('Update Status:', {
-        orderId: currentOrder.orderId,
-        oldStatus: currentOrder.status,
-        newStatus: newStatus
-    });
-    
-    // TODO: Update status in Google Sheets
-    // updateOrderStatusInSheet(currentOrder.orderId, newStatus);
-    
-    // Update current order
-    currentOrder.status = newStatus;
-    
-    // Update status badge
-    const statusBadge = document.getElementById('currentStatusBadge');
-    statusBadge.textContent = newStatus;
-    statusBadge.className = 'status-badge ' + getStatusClass(newStatus);
-    
-    // Show success modal
-    showUpdateSuccessModal();
-    
-    // Reset form
-    document.getElementById('updateStatusForm').reset();
-}
-
-/**
- * Show update success modal
- */
-function showUpdateSuccessModal() {
-    const modal = new bootstrap.Modal(document.getElementById('updateSuccessModal'));
-    modal.show();
-}
-
-/**
- * Show loading spinner
- */
-function showLoading() {
-    document.getElementById('loadingSpinner').style.display = 'block';
-    document.getElementById('orderDetailsCard').style.display = 'none';
-    document.getElementById('noResults').style.display = 'none';
-}
-
-/**
- * Hide loading spinner
- */
-function hideLoading() {
-    document.getElementById('loadingSpinner').style.display = 'none';
-}
-
-// ========================================
-// Google Sheets API Functions (Placeholder)
-// ========================================
-
-/**
- * Save order to Google Sheets
- * @param {Object} orderData - Order data to save
- */
-async function saveOrderToSheet(orderData) {
-    try {
-        // TODO: Implement Google Sheets API integration
-        console.log('Saving to Google Sheets:', orderData);
-        
-        /*
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CONFIG.TOKEN}`
-            },
-            body: JSON.stringify({
-                sheetId: CONFIG.SHEET_ID,
-                data: orderData
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to save order');
-        }
-        
-        return await response.json();
-        */
-        
-        return true;
-    } catch (error) {
-        console.error('Error saving order:', error);
-        alert('حدث خطأ أثناء حفظ الأوردر');
-        return false;
+    .card-arrow {
+        display: none;
     }
 }
 
-/**
- * Search order in Google Sheets
- * @param {string} orderId - Order ID
- * @param {string} phone - Phone number
- */
-async function searchOrderInSheet(orderId, phone) {
-    try {
-        // TODO: Implement Google Sheets API integration
-        console.log('Searching in Google Sheets:', { orderId, phone });
-        
-        /*
-        const response = await fetch(
-            `${CONFIG.API_URL}?sheetId=${CONFIG.SHEET_ID}&orderId=${orderId}&phone=${phone}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${CONFIG.TOKEN}`
-                }
-            }
-        );
-        
-        if (!response.ok) {
-            throw new Error('Failed to search order');
-        }
-        
-        const data = await response.json();
-        
-        if (data && data.order) {
-            displayOrderDetails(data.order);
-        } else {
-            showNoResults();
-        }
-        */
-        
-        return null;
-    } catch (error) {
-        console.error('Error searching order:', error);
-        alert('حدث خطأ أثناء البحث');
-        return null;
+/* ========================================
+   Print Styles
+   ======================================== */
+@media print {
+    .page-header,
+    .btn-back,
+    .form-actions,
+    .update-status-section,
+    .search-card {
+        display: none;
+    }
+    
+    .glass-effect {
+        background: white;
+        box-shadow: none;
+    }
+    
+    body {
+        background: white;
     }
 }
 
-/**
- * Update order status in Google Sheets
- * @param {string} orderId - Order ID
- * @param {string} newStatus - New status
- */
-async function updateOrderStatusInSheet(orderId, newStatus) {
-    try {
-        // TODO: Implement Google Sheets API integration
-        console.log('Updating status in Google Sheets:', { orderId, newStatus });
-        
-        /*
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CONFIG.TOKEN}`
-            },
-            body: JSON.stringify({
-                sheetId: CONFIG.SHEET_ID,
-                orderId: orderId,
-                status: newStatus
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to update status');
-        }
-        
-        return await response.json();
-        */
-        
-        return true;
-    } catch (error) {
-        console.error('Error updating status:', error);
-        alert('حدث خطأ أثناء تحديث الحالة');
-        return false;
+/* ========================================
+   Accessibility
+   ======================================== */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus Styles */
+*:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
-
-/**
- * Show no results message
- */
-function showNoResults() {
-    document.getElementById('noResults').style.display = 'block';
-    document.getElementById('orderDetailsCard').style.display = 'none';
-}
-
-// ========================================
-// Utility Functions
-// ========================================
-
-/**
- * Format date to Arabic locale
- * @param {Date} date - Date to format
- * @returns {string} Formatted date
- */
-function formatDate(date) {
-    return new Date(date).toLocaleDateString('ar-EG', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
-
-/**
- * Generate unique order ID
- * @returns {string} Order ID
- */
-function generateOrderId() {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `ORD-${timestamp}-${random}`;
-}
-
-/**
- * Format currency
- * @param {number} amount - Amount to format
- * @returns {string} Formatted currency
- */
-function formatCurrency(amount) {
-    return `${parseFloat(amount).toFixed(2)} جنيه`;
-}
-
-// ========================================
-// Error Handling
-// ========================================
-window.addEventListener('error', (e) => {
-    console.error('Global error:', e.error);
-});
-
-window.addEventListener('unhandledrejection', (e) => {
-    console.error('Unhandled promise rejection:', e.reason);
-});
-
-// ========================================
-// Console Info
-// ========================================
-console.log('%c Shalaby OMS v1.0 ', 'background: #D32F2F; color: white; font-size: 16px; font-weight: bold; padding: 5px 10px;');
-console.log('%c Powered by OROOJ Agency ', 'background: #111; color: white; font-size: 12px; padding: 3px 8px;');

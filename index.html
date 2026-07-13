@@ -1,25 +1,93 @@
-*{
-
-margin:0;
-
-padding:0;
-
-box-sizing:border-box;
-
-font-family:'Cairo',sans-serif;
-
-}
-
-body{
-
-background:#f7f8fa;
-
-min-height:100vh;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shalaby OMS - نظام إدارة الطلبات الذكي">
+    <meta name="author" content="OROOJ Agency">
+    <title>Shalaby OMS - نظام إدارة الطلبات</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Font Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Logo Section -->
+        <div class="logo-section animate-fade-in">
+            <div class="logo-wrapper">
+                <img src="logo.png" alt="Shalaby OMS Logo" class="main-logo" id="mainLogo">
+            </div>
+        </div>
+        
+        <!-- Title Section -->
+        <div class="title-section animate-fade-in-up">
+            <h1 class="main-title">Shalaby OMS</h1>
+            <p class="main-subtitle">نظام إدارة الطلبات الذكي</p>
+        </div>
+        
+        <!-- Cards Section -->
+        <div class="cards-container">
+            <div class="row g-4">
+                
+                <!-- New Order Card -->
+                <div class="col-lg-6 col-md-6 col-12">
+                    <div class="action-card glass-effect animate-scale" onclick="navigateTo('new-order.html')">
+                        <div class="card-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h3 class="card-title">تسجيل أوردر جديد</h3>
+                        <p class="card-description">إضافة طلب جديد للنظام بكل سهولة</p>
+                        <div class="card-arrow">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Update Order Card -->
+                <div class="col-lg-6 col-md-6 col-12">
+                    <div class="action-card glass-effect animate-scale" onclick="navigateTo('update-order.html')">
+                        <div class="card-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h3 class="card-title">تعديل حالة أوردر</h3>
+                        <p class="card-description">تحديث حالة الطلبات الموجودة</p>
+                        <div class="card-arrow">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="main-footer animate-fade-in">
+            <p class="footer-version">الإصدار 1.0</p>
+            <p class="footer-credits">Powered By <span class="highlight">OROOJ Agency</span></p>
+        </footer>
+        
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    
+</body>
+</html>

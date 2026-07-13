@@ -80,7 +80,7 @@ const CONFIG = {
     // Shipping Companies
     SHIPPING_COMPANIES: [
         'أرامكس',
-        'فيدكس',
+        'البريد المصرى',
         'سمسا',
         'DHL',
         'بوستا',

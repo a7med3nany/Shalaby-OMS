@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تسجيل أوردر جديد - Shalaby OMS">
+    <meta name="description" content="تعديل حالة أوردر - Shalaby OMS">
     <meta name="author" content="OROOJ Agency">
-    <title>تسجيل أوردر جديد - Shalaby OMS</title>
+    <title>تعديل حالة أوردر - Shalaby OMS</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
                 <button class="btn-back" onclick="navigateTo('index.html')">
                     <i class="fas fa-arrow-right"></i>
                 </button>
-                <h1 class="page-title">تسجيل أوردر جديد</h1>
+                <h1 class="page-title">تعديل حالة أوردر</h1>
                 <div class="header-spacer"></div>
             </div>
         </div>
@@ -40,281 +40,209 @@
     <div class="page-container">
         <div class="container">
             
-            <div class="form-card glass-effect animate-fade-in-up">
+            <!-- Search Section -->
+            <div class="search-card glass-effect animate-fade-in-up">
+                <h3 class="section-title mb-4">
+                    <i class="fas fa-search"></i>
+                    البحث عن أوردر
+                </h3>
                 
-                <form id="newOrderForm" novalidate>
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="searchOrderId" class="form-label">
+                                <i class="fas fa-hashtag"></i>
+                                رقم الأوردر
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="searchOrderId" 
+                                placeholder="أدخل رقم الأوردر"
+                            >
+                        </div>
+                    </div>
                     
-                    <!-- Customer Information Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="searchPhone" class="form-label">
+                                <i class="fas fa-phone"></i>
+                                رقم الموبايل (اختياري)
+                            </label>
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                id="searchPhone" 
+                                placeholder="أدخل رقم الموبايل"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="form-label d-block opacity-0">بحث</label>
+                            <button class="btn btn-primary w-100" onclick="searchOrder()">
+                                <i class="fas fa-search"></i>
+                                <span>بحث</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">جاري البحث...</span>
+                </div>
+                <p class="mt-3">جاري البحث...</p>
+            </div>
+            
+            <!-- No Results Message -->
+            <div class="no-results glass-effect" id="noResults" style="display: none;">
+                <div class="no-results-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>لم يتم العثور على الأوردر</h3>
+                <p class="text-muted">تأكد من رقم الأوردر أو رقم الموبايل وحاول مرة أخرى</p>
+            </div>
+            
+            <!-- Order Details Section -->
+            <div class="order-details-card glass-effect animate-fade-in-up" id="orderDetailsCard" style="display: none;">
+                
+                <h3 class="section-title mb-4">
+                    <i class="fas fa-file-invoice"></i>
+                    تفاصيل الأوردر
+                </h3>
+                
+                <!-- Order Info Grid -->
+                <div class="order-info-grid">
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-hashtag"></i>
+                            رقم الأوردر
+                        </div>
+                        <div class="info-value" id="displayOrderId">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-calendar"></i>
+                            تاريخ الأوردر
+                        </div>
+                        <div class="info-value" id="displayOrderDate">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
                             <i class="fas fa-user"></i>
-                            بيانات العميل
-                        </h3>
-                        
+                            اسم العميل
+                        </div>
+                        <div class="info-value" id="displayCustomerName">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-phone"></i>
+                            رقم التليفون
+                        </div>
+                        <div class="info-value" id="displayPhone">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-box-open"></i>
+                            المنتج
+                        </div>
+                        <div class="info-value" id="displayProduct">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-money-bill-wave"></i>
+                            السعر الإجمالي
+                        </div>
+                        <div class="info-value" id="displayPrice">-</div>
+                    </div>
+                    
+                    <div class="info-item full-width">
+                        <div class="info-label">
+                            <i class="fas fa-map-marker-alt"></i>
+                            العنوان
+                        </div>
+                        <div class="info-value" id="displayAddress">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-truck"></i>
+                            شركة الشحن
+                        </div>
+                        <div class="info-value" id="displayShipping">-</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-credit-card"></i>
+                            طريقة الدفع
+                        </div>
+                        <div class="info-value" id="displayPayment">-</div>
+                    </div>
+                    
+                </div>
+                
+                <!-- Current Status -->
+                <div class="current-status-section">
+                    <h4 class="status-title">
+                        <i class="fas fa-circle-info"></i>
+                        الحالة الحالية
+                    </h4>
+                    <div class="status-badge-container">
+                        <span class="status-badge" id="currentStatusBadge">جديد</span>
+                    </div>
+                </div>
+                
+                <!-- Update Status Form -->
+                <div class="update-status-section">
+                    <h4 class="status-title mb-3">
+                        <i class="fas fa-sync-alt"></i>
+                        تحديث الحالة
+                    </h4>
+                    
+                    <form id="updateStatusForm">
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <div class="form-group">
-                                    <label for="customerName" class="form-label">
-                                        <i class="fas fa-user-circle"></i>
-                                        اسم العميل
+                                    <label for="newStatus" class="form-label">
+                                        <i class="fas fa-list"></i>
+                                        الحالة الجديدة
                                     </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="customerName" 
-                                        placeholder="أدخل اسم العميل بالكامل"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">من فضلك أدخل اسم العميل</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="customerPhone" class="form-label">
-                                        <i class="fas fa-phone"></i>
-                                        رقم التليفون
-                                    </label>
-                                    <input 
-                                        type="tel" 
-                                        class="form-control" 
-                                        id="customerPhone" 
-                                        placeholder="01XXXXXXXXX"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">من فضلك أدخل رقم تليفون صحيح</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="governorate" class="form-label">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        المحافظة
-                                    </label>
-                                    <select class="form-select" id="governorate" required>
-                                        <option value="" selected disabled>اختر المحافظة</option>
-                                        <option value="القاهرة">القاهرة</option>
-                                        <option value="الجيزة">الجيزة</option>
-                                        <option value="الإسكندرية">الإسكندرية</option>
-                                        <option value="الدقهلية">الدقهلية</option>
-                                        <option value="الشرقية">الشرقية</option>
-                                        <option value="القليوبية">القليوبية</option>
-                                        <option value="البحيرة">البحيرة</option>
-                                        <option value="الغربية">الغربية</option>
-                                        <option value="المنوفية">المنوفية</option>
-                                        <option value="كفر الشيخ">كفر الشيخ</option>
-                                        <option value="دمياط">دمياط</option>
-                                        <option value="بورسعيد">بورسعيد</option>
-                                        <option value="الإسماعيلية">الإسماعيلية</option>
-                                        <option value="السويس">السويس</option>
-                                        <option value="المنيا">المنيا</option>
-                                        <option value="بني سويف">بني سويف</option>
-                                        <option value="الفيوم">الفيوم</option>
-                                        <option value="أسيوط">أسيوط</option>
-                                        <option value="سوهاج">سوهاج</option>
-                                        <option value="قنا">قنا</option>
-                                        <option value="أسوان">أسوان</option>
-                                        <option value="الأقصر">الأقصر</option>
-                                        <option value="البحر الأحمر">البحر الأحمر</option>
-                                        <option value="الوادي الجديد">الوادي الجديد</option>
-                                        <option value="مطروح">مطروح</option>
-                                        <option value="شمال سيناء">شمال سيناء</option>
-                                        <option value="جنوب سيناء">جنوب سيناء</option>
+                                    <select class="form-select" id="newStatus" required>
+                                        <option value="" selected disabled>اختر الحالة الجديدة</option>
+                                        <option value="جديد">جديد</option>
+                                        <option value="جارى المراجعة">جارى المراجعة</option>
+                                        <option value="جارى التجهيز">جارى التجهيز</option>
+                                        <option value="تم الشحن">تم الشحن</option>
+                                        <option value="تم التسليم">تم التسليم</option>
+                                        <option value="ملغى">ملغى</option>
+                                        <option value="مرتجع">مرتجع</option>
                                     </select>
-                                    <div class="invalid-feedback">من فضلك اختر المحافظة</div>
                                 </div>
                             </div>
                             
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="address" class="form-label">
-                                        <i class="fas fa-location-dot"></i>
-                                        العنوان بالتفصيل
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="address" 
-                                        placeholder="الشارع، المنطقة، معالم مميزة"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">من فضلك أدخل العنوان</div>
+                                    <label class="form-label d-block opacity-0">تحديث</label>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-check"></i>
+                                        <span>تحديث الحالة</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Order Details Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-shopping-cart"></i>
-                            تفاصيل الأوردر
-                        </h3>
-                        
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="product" class="form-label">
-                                        <i class="fas fa-box-open"></i>
-                                        المنتج
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="product" 
-                                        placeholder="اسم المنتج"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">من فضلك أدخل اسم المنتج</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="quantity" class="form-label">
-                                        <i class="fas fa-hashtag"></i>
-                                        الكمية
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        class="form-control" 
-                                        id="quantity" 
-                                        placeholder="1"
-                                        min="1"
-                                        value="1"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">من فضلك أدخل الكمية</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="price" class="form-label">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                        السعر
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        class="form-control" 
-                                        id="price" 
-                                        placeholder="0.00"
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                    >
-                                    <div class="invalid-feedback">من فضلك أدخل السعر</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Shipping & Payment Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-truck-fast"></i>
-                            الشحن والدفع
-                        </h3>
-                        
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="shippingCompany" class="form-label">
-                                        <i class="fas fa-truck"></i>
-                                        شركة الشحن
-                                    </label>
-                                    <select class="form-select" id="shippingCompany" required>
-                                        <option value="" selected disabled>اختر شركة الشحن</option>
-                                        <option value="أرامكس">أرامكس</option>
-                                        <option value="فيدكس">فيدكس</option>
-                                        <option value="سمسا">سمسا</option>
-                                        <option value="DHL">DHL</option>
-                                        <option value="بوستا">بوستا</option>
-                                        <option value="ماي واي">ماي واي</option>
-                                        <option value="فاست كارجو">فاست كارجو</option>
-                                        <option value="أخرى">أخرى</option>
-                                    </select>
-                                    <div class="invalid-feedback">من فضلك اختر شركة الشحن</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="paymentMethod" class="form-label">
-                                        <i class="fas fa-credit-card"></i>
-                                        طريقة الدفع
-                                    </label>
-                                    <select class="form-select" id="paymentMethod" required>
-                                        <option value="" selected disabled>اختر طريقة الدفع</option>
-                                        <option value="كاش عند الاستلام">كاش عند الاستلام</option>
-                                        <option value="تحويل بنكي">تحويل بنكي</option>
-                                        <option value="فودافون كاش">فودافون كاش</option>
-                                        <option value="فيزا">فيزا</option>
-                                        <option value="إنستا باي">إنستا باي</option>
-                                        <option value="محفظة إلكترونية">محفظة إلكترونية</option>
-                                    </select>
-                                    <div class="invalid-feedback">من فضلك اختر طريقة الدفع</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Additional Information Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-info-circle"></i>
-                            معلومات إضافية
-                        </h3>
-                        
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="orderSource" class="form-label">
-                                        <i class="fas fa-globe"></i>
-                                        مصدر الأوردر
-                                    </label>
-                                    <select class="form-select" id="orderSource" required>
-                                        <option value="" selected disabled>اختر مصدر الأوردر</option>
-                                        <option value="فيسبوك">فيسبوك</option>
-                                        <option value="إنستجرام">إنستجرام</option>
-                                        <option value="تيك توك">تيك توك</option>
-                                        <option value="واتساب">واتساب</option>
-                                        <option value="الموقع الإلكتروني">الموقع الإلكتروني</option>
-                                        <option value="مكالمة هاتفية">مكالمة هاتفية</option>
-                                        <option value="عميل سابق">عميل سابق</option>
-                                        <option value="أخرى">أخرى</option>
-                                    </select>
-                                    <div class="invalid-feedback">من فضلك اختر مصدر الأوردر</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="notes" class="form-label">
-                                        <i class="fas fa-clipboard"></i>
-                                        ملاحظات
-                                    </label>
-                                    <textarea 
-                                        class="form-control" 
-                                        id="notes" 
-                                        rows="4" 
-                                        placeholder="أي ملاحظات أو تعليمات خاصة بالأوردر..."
-                                    ></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Submit Button -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg btn-submit">
-                            <i class="fas fa-save"></i>
-                            <span>حفظ الأوردر</span>
-                        </button>
-                    </div>
-                    
-                </form>
+                    </form>
+                </div>
                 
             </div>
             
@@ -322,16 +250,16 @@
     </div>
     
     <!-- Success Modal -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="updateSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content glass-effect">
                 <div class="modal-body text-center p-5">
                     <div class="success-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <h3 class="mt-4 mb-3">تم حفظ الأوردر بنجاح!</h3>
-                    <p class="text-muted">تم إضافة الأوردر للنظام بنجاح</p>
-                    <button type="button" class="btn btn-primary mt-3" onclick="closeModalAndReset()">
+                    <h3 class="mt-4 mb-3">تم تحديث الحالة بنجاح!</h3>
+                    <p class="text-muted">تم تحديث حالة الأوردر بنجاح</p>
+                    <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">
                         تمام
                     </button>
                 </div>
@@ -347,4 +275,4 @@
     <script src="script.js"></script>
     
 </body>
-                                                                                 </html>
+</html>

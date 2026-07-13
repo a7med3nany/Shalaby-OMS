@@ -1,278 +1,324 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تعديل حالة أوردر - Shalaby OMS">
-    <meta name="author" content="OROOJ Agency">
-    <title>تعديل حالة أوردر - Shalaby OMS</title>
+    <meta name="description" content="Shalaby OMS - تسجيل أوردر جديد">
+    <meta name="theme-color" content="#D32F2F">
     
+    <title>تسجيل أوردر جديد - Shalaby OMS</title>
+
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Font Cairo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts - Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
-    <!-- Header -->
-    <header class="page-header glass-effect">
-        <div class="container-fluid">
-            <div class="header-content">
-                <button class="btn-back" onclick="navigateTo('index.html')">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-                <h1 class="page-title">تعديل حالة أوردر</h1>
-                <div class="header-spacer"></div>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+        <div class="container-fluid px-4 px-md-5">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="logo-placeholder me-3">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <span class="fw-bold">Shalaby OMS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="new-order.html">طلب جديد</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="update-order.html">تحديث الطلب</a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </header>
-    
+    </nav>
+
     <!-- Main Content -->
-    <div class="page-container">
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="section-header py-4 bg-light">
+            <div class="container">
+                <div class="d-flex align-items-center">
+                    <a href="index.html" class="btn btn-sm btn-outline-secondary rounded-pill me-3">
+                        <i class="fas fa-arrow-right me-2"></i>رجوع
+                    </a>
+                    <div>
+                        <h1 class="h3 fw-bold mb-1">تسجيل أوردر جديد</h1>
+                        <p class="text-muted small mb-0">أضف طلب جديد إلى النظام</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Section -->
+        <section class="form-section py-5 py-md-8">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <!-- Form Card -->
+                        <div class="card card-premium shadow-lg">
+                            <div class="card-body p-5">
+                                <!-- Form -->
+                                <form id="newOrderForm">
+                                    <!-- Customer Info Section -->
+                                    <div class="section-divider mb-4">
+                                        <h5 class="fw-bold text-dark">
+                                            <i class="fas fa-user me-2 text-danger"></i>
+                                            بيانات العميل
+                                        </h5>
+                                    </div>
+
+                                    <!-- Customer Name -->
+                                    <div class="mb-4">
+                                        <label for="customerName" class="form-label fw-bold">اسم العميل</label>
+                                        <input 
+                                            type="text" 
+                                            class="form-control form-control-lg" 
+                                            id="customerName"
+                                            placeholder="أدخل اسم العميل الكامل"
+                                            required>
+                                        <div class="form-text">يجب إدخال الاسم الكامل للعميل</div>
+                                    </div>
+
+                                    <!-- Phone -->
+                                    <div class="mb-4">
+                                        <label for="phone" class="form-label fw-bold">رقم الهاتف</label>
+                                        <input 
+                                            type="tel" 
+                                            class="form-control form-control-lg" 
+                                            id="phone"
+                                            placeholder="مثال: 01012345678"
+                                            required>
+                                        <div class="form-text">أدخل رقم الهاتف المصري</div>
+                                    </div>
+
+                                    <!-- Location Info Section -->
+                                    <div class="section-divider mb-4 mt-5">
+                                        <h5 class="fw-bold text-dark">
+                                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                                            بيانات العنوان
+                                        </h5>
+                                    </div>
+
+                                    <!-- Governorate -->
+                                    <div class="mb-4">
+                                        <label for="governorate" class="form-label fw-bold">المحافظة</label>
+                                        <select 
+                                            class="form-select form-select-lg" 
+                                            id="governorate"
+                                            required>
+                                            <option value="">اختر المحافظة</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Address -->
+                                    <div class="mb-4">
+                                        <label for="address" class="form-label fw-bold">العنوان بالتفصيل</label>
+                                        <textarea 
+                                            class="form-control form-control-lg" 
+                                            id="address"
+                                            rows="3"
+                                            placeholder="مثال: الشارع، المنطقة، رقم العمارة..."
+                                            required></textarea>
+                                    </div>
+
+                                    <!-- Product Info Section -->
+                                    <div class="section-divider mb-4 mt-5">
+                                        <h5 class="fw-bold text-dark">
+                                            <i class="fas fa-box me-2 text-danger"></i>
+                                            بيانات المنتج
+                                        </h5>
+                                    </div>
+
+                                    <!-- Product -->
+                                    <div class="mb-4">
+                                        <label for="product" class="form-label fw-bold">المنتج</label>
+                                        <input 
+                                            type="text" 
+                                            class="form-control form-control-lg" 
+                                            id="product"
+                                            placeholder="اسم المنتج أو الخدمة"
+                                            required>
+                                    </div>
+
+                                    <!-- Quantity -->
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label for="quantity" class="form-label fw-bold">الكمية</label>
+                                            <input 
+                                                type="number" 
+                                                class="form-control form-control-lg" 
+                                                id="quantity"
+                                                placeholder="0"
+                                                min="1"
+                                                required>
+                                        </div>
+
+                                        <!-- Price -->
+                                        <div class="col-md-6 mb-4">
+                                            <label for="price" class="form-label fw-bold">السعر (جنيه)</label>
+                                            <input 
+                                                type="number" 
+                                                class="form-control form-control-lg" 
+                                                id="price"
+                                                placeholder="0.00"
+                                                step="0.01"
+                                                min="0"
+                                                required>
+                                        </div>
+                                    </div>
+
+                                    <!-- Shipping & Payment Section -->
+                                    <div class="section-divider mb-4 mt-5">
+                                        <h5 class="fw-bold text-dark">
+                                            <i class="fas fa-truck me-2 text-danger"></i>
+                                            الشحن والدفع
+                                        </h5>
+                                    </div>
+
+                                    <!-- Shipping Company -->
+                                    <div class="mb-4">
+                                        <label for="shippingCompany" class="form-label fw-bold">شركة الشحن</label>
+                                        <select 
+                                            class="form-select form-select-lg" 
+                                            id="shippingCompany"
+                                            required>
+                                            <option value="">اختر شركة الشحن</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Payment Method -->
+                                    <div class="mb-4">
+                                        <label for="paymentMethod" class="form-label fw-bold">طريقة الدفع</label>
+                                        <select 
+                                            class="form-select form-select-lg" 
+                                            id="paymentMethod"
+                                            required>
+                                            <option value="">اختر طريقة الدفع</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Order Source -->
+                                    <div class="mb-4">
+                                        <label for="orderSource" class="form-label fw-bold">مصدر الطلب</label>
+                                        <select 
+                                            class="form-select form-select-lg" 
+                                            id="orderSource"
+                                            required>
+                                            <option value="">اختر مصدر الطلب</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Additional Info Section -->
+                                    <div class="section-divider mb-4 mt-5">
+                                        <h5 class="fw-bold text-dark">
+                                            <i class="fas fa-note-sticky me-2 text-danger"></i>
+                                            ملاحظات إضافية
+                                        </h5>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <div class="mb-5">
+                                        <label for="notes" class="form-label fw-bold">ملاحظات</label>
+                                        <textarea 
+                                            class="form-control form-control-lg" 
+                                            id="notes"
+                                            rows="3"
+                                            placeholder="أي ملاحظات أو معلومات إضافية..."></textarea>
+                                    </div>
+
+                                    <!-- Form Actions -->
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <a href="index.html" class="btn btn-lg btn-outline-secondary rounded-pill">
+                                            <i class="fas fa-times me-2"></i>إلغاء
+                                        </a>
+                                        <button 
+                                            type="submit" 
+                                            class="btn btn-lg btn-danger rounded-pill"
+                                            id="submitBtn">
+                                            <i class="fas fa-save me-2"></i>حفظ الطلب
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Help Text -->
+                        <div class="alert alert-info mt-4" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>ملاحظة:</strong> جميع الحقول المميزة بعلامة * إجبارية الملء
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-5 bg-dark text-white">
         <div class="container">
-            
-            <!-- Search Section -->
-            <div class="search-card glass-effect animate-fade-in-up">
-                <h3 class="section-title mb-4">
-                    <i class="fas fa-search"></i>
-                    البحث عن أوردر
-                </h3>
-                
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label for="searchOrderId" class="form-label">
-                                <i class="fas fa-hashtag"></i>
-                                رقم الأوردر
-                            </label>
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="searchOrderId" 
-                                placeholder="أدخل رقم الأوردر"
-                            >
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label for="searchPhone" class="form-label">
-                                <i class="fas fa-phone"></i>
-                                رقم الموبايل (اختياري)
-                            </label>
-                            <input 
-                                type="tel" 
-                                class="form-control" 
-                                id="searchPhone" 
-                                placeholder="أدخل رقم الموبايل"
-                            >
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="form-label d-block opacity-0">بحث</label>
-                            <button class="btn btn-primary w-100" onclick="searchOrder()">
-                                <i class="fas fa-search"></i>
-                                <span>بحث</span>
-                            </button>
-                        </div>
-                    </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">Shalaby OMS</h5>
+                    <p class="text-muted small">
+                        نظام إدارة الطلبات الذكي المصمم خصيصاً لتلبية احتياجات الشركات الحديثة.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">الروابط السريعة</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="index.html" class="text-muted small text-decoration-none">الرئيسية</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="new-order.html" class="text-muted small text-decoration-none">طلب جديد</a>
+                        </li>
+                        <li>
+                            <a href="update-order.html" class="text-muted small text-decoration-none">تحديث الطلب</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <h5 class="fw-bold mb-3">معلومات التطبيق</h5>
+                    <p class="text-muted small mb-1">الإصدار: 1.0.0</p>
+                    <p class="text-muted small">جميع الحقوق محفوظة © 2024</p>
                 </div>
             </div>
-            
-            <!-- Loading Spinner -->
-            <div class="loading-spinner" id="loadingSpinner" style="display: none;">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">جاري البحث...</span>
-                </div>
-                <p class="mt-3">جاري البحث...</p>
-            </div>
-            
-            <!-- No Results Message -->
-            <div class="no-results glass-effect" id="noResults" style="display: none;">
-                <div class="no-results-icon">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <h3>لم يتم العثور على الأوردر</h3>
-                <p class="text-muted">تأكد من رقم الأوردر أو رقم الموبايل وحاول مرة أخرى</p>
-            </div>
-            
-            <!-- Order Details Section -->
-            <div class="order-details-card glass-effect animate-fade-in-up" id="orderDetailsCard" style="display: none;">
-                
-                <h3 class="section-title mb-4">
-                    <i class="fas fa-file-invoice"></i>
-                    تفاصيل الأوردر
-                </h3>
-                
-                <!-- Order Info Grid -->
-                <div class="order-info-grid">
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-hashtag"></i>
-                            رقم الأوردر
-                        </div>
-                        <div class="info-value" id="displayOrderId">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-calendar"></i>
-                            تاريخ الأوردر
-                        </div>
-                        <div class="info-value" id="displayOrderDate">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-user"></i>
-                            اسم العميل
-                        </div>
-                        <div class="info-value" id="displayCustomerName">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-phone"></i>
-                            رقم التليفون
-                        </div>
-                        <div class="info-value" id="displayPhone">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-box-open"></i>
-                            المنتج
-                        </div>
-                        <div class="info-value" id="displayProduct">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-money-bill-wave"></i>
-                            السعر الإجمالي
-                        </div>
-                        <div class="info-value" id="displayPrice">-</div>
-                    </div>
-                    
-                    <div class="info-item full-width">
-                        <div class="info-label">
-                            <i class="fas fa-map-marker-alt"></i>
-                            العنوان
-                        </div>
-                        <div class="info-value" id="displayAddress">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-truck"></i>
-                            شركة الشحن
-                        </div>
-                        <div class="info-value" id="displayShipping">-</div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-label">
-                            <i class="fas fa-credit-card"></i>
-                            طريقة الدفع
-                        </div>
-                        <div class="info-value" id="displayPayment">-</div>
-                    </div>
-                    
-                </div>
-                
-                <!-- Current Status -->
-                <div class="current-status-section">
-                    <h4 class="status-title">
-                        <i class="fas fa-circle-info"></i>
-                        الحالة الحالية
-                    </h4>
-                    <div class="status-badge-container">
-                        <span class="status-badge" id="currentStatusBadge">جديد</span>
-                    </div>
-                </div>
-                
-                <!-- Update Status Form -->
-                <div class="update-status-section">
-                    <h4 class="status-title mb-3">
-                        <i class="fas fa-sync-alt"></i>
-                        تحديث الحالة
-                    </h4>
-                    
-                    <form id="updateStatusForm">
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label for="newStatus" class="form-label">
-                                        <i class="fas fa-list"></i>
-                                        الحالة الجديدة
-                                    </label>
-                                    <select class="form-select" id="newStatus" required>
-                                        <option value="" selected disabled>اختر الحالة الجديدة</option>
-                                        <option value="جديد">جديد</option>
-                                        <option value="جارى المراجعة">جارى المراجعة</option>
-                                        <option value="جارى التجهيز">جارى التجهيز</option>
-                                        <option value="تم الشحن">تم الشحن</option>
-                                        <option value="تم التسليم">تم التسليم</option>
-                                        <option value="ملغى">ملغى</option>
-                                        <option value="مرتجع">مرتجع</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label d-block opacity-0">تحديث</label>
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="fas fa-check"></i>
-                                        <span>تحديث الحالة</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
-            </div>
-            
-        </div>
-    </div>
-    
-    <!-- Success Modal -->
-    <div class="modal fade" id="updateSuccessModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content glass-effect">
-                <div class="modal-body text-center p-5">
-                    <div class="success-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="mt-4 mb-3">تم تحديث الحالة بنجاح!</h3>
-                    <p class="text-muted">تم تحديث حالة الأوردر بنجاح</p>
-                    <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">
-                        تمام
-                    </button>
-                </div>
+            <hr class="bg-secondary my-4">
+            <div class="text-center">
+                <p class="text-muted small mb-0">
+                    Powered By <strong>OROOJ Agency</strong> ⚡
+                </p>
             </div>
         </div>
-    </div>
-    
+    </footer>
+
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Config -->
     <script src="config.js"></script>
+
+    <!-- Main Script -->
     <script src="script.js"></script>
-    
 </body>
+
 </html>

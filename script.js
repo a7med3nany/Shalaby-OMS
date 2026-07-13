@@ -358,35 +358,30 @@ function searchOrder() {
     const orderId = document.getElementById('searchOrderId')?.value.trim();
     const phone = document.getElementById('searchPhone')?.value.trim();
     
-    // Validate search input
+    // Validate search input - prioritize order ID
     if (!orderId && !phone) {
-        alert('من فضلك أدخل رقم الأوردر أو رقم التليفون');
+        alert('من فضلك أدخل رقم الأوردر أو رقم الموبايل');
         return;
     }
     
     // Show loading
     showLoading();
     
-    // Simulate API call
+    // TODO: Replace with actual API call
+    // Search by order ID first, then by phone if order ID is empty
+    if (orderId) {
+        console.log('Searching by Order ID:', orderId);
+        // searchOrderInSheetById(orderId);
+    } else if (phone) {
+        console.log('Searching by Phone:', phone);
+        // searchOrderInSheetByPhone(phone);
+    }
+    
+    // Simulate API call - will be removed when implementing real API
     setTimeout(() => {
-        // TODO: Replace with actual API call
-        // searchOrderInSheet(orderId, phone);
-        
-        // Mock data for demonstration
-        const mockOrder = {
-            orderId: orderId || '12345',
-            orderDate: new Date().toLocaleDateString('ar-EG'),
-            customerName: 'محمد أحمد',
-            phone: phone || '01012345678',
-            product: 'منتج تجريبي',
-            price: '500.00 جنيه',
-            address: 'القاهرة، مدينة نصر، شارع عباس العقاد',
-            shippingCompany: 'أرامكس',
-            paymentMethod: 'كاش عند الاستلام',
-            status: 'جديد'
-        };
-        
-        displayOrderDetails(mockOrder);
+        // TODO: Replace this with actual API response
+        // For now, show no results
+        showNoResults();
         hideLoading();
     }, 1500);
 }
@@ -402,20 +397,20 @@ function displayOrderDetails(order) {
     document.getElementById('noResults').style.display = 'none';
     
     // Populate order details
-    document.getElementById('displayOrderId').textContent = order.orderId;
-    document.getElementById('displayOrderDate').textContent = order.orderDate;
-    document.getElementById('displayCustomerName').textContent = order.customerName;
-    document.getElementById('displayPhone').textContent = order.phone;
-    document.getElementById('displayProduct').textContent = order.product;
-    document.getElementById('displayPrice').textContent = order.price;
-    document.getElementById('displayAddress').textContent = order.address;
-    document.getElementById('displayShipping').textContent = order.shippingCompany;
-    document.getElementById('displayPayment').textContent = order.paymentMethod;
+    document.getElementById('displayOrderId').textContent = order.orderId || '-';
+    document.getElementById('displayOrderDate').textContent = order.orderDate || '-';
+    document.getElementById('displayCustomerName').textContent = order.customerName || '-';
+    document.getElementById('displayPhone').textContent = order.phone || '-';
+    document.getElementById('displayProduct').textContent = order.product || '-';
+    document.getElementById('displayPrice').textContent = order.price || '-';
+    document.getElementById('displayAddress').textContent = order.address || '-';
+    document.getElementById('displayShipping').textContent = order.shippingCompany || '-';
+    document.getElementById('displayPayment').textContent = order.paymentMethod || '-';
     
     // Update status badge
     const statusBadge = document.getElementById('currentStatusBadge');
-    statusBadge.textContent = order.status;
-    statusBadge.className = 'status-badge ' + getStatusClass(order.status);
+    statusBadge.textContent = order.status || 'جديد';
+    statusBadge.className = 'status-badge ' + getStatusClass(order.status || 'جديد');
     
     // Show order details card
     const orderCard = document.getElementById('orderDetailsCard');
@@ -513,6 +508,14 @@ function hideLoading() {
     document.getElementById('loadingSpinner').style.display = 'none';
 }
 
+/**
+ * Show no results message
+ */
+function showNoResults() {
+    document.getElementById('noResults').style.display = 'block';
+    document.getElementById('orderDetailsCard').style.display = 'none';
+}
+
 // ========================================
 // Google Sheets API Functions (Placeholder)
 // ========================================
@@ -555,18 +558,17 @@ async function saveOrderToSheet(orderData) {
 }
 
 /**
- * Search order in Google Sheets
+ * Search order in Google Sheets by ID
  * @param {string} orderId - Order ID
- * @param {string} phone - Phone number
  */
-async function searchOrderInSheet(orderId, phone) {
+async function searchOrderInSheetById(orderId) {
     try {
         // TODO: Implement Google Sheets API integration
-        console.log('Searching in Google Sheets:', { orderId, phone });
+        console.log('Searching by Order ID in Google Sheets:', orderId);
         
         /*
         const response = await fetch(
-            `${CONFIG.API_URL}?sheetId=${CONFIG.SHEET_ID}&orderId=${orderId}&phone=${phone}`,
+            `${CONFIG.API_URL}?sheetId=${CONFIG.SHEET_ID}&orderId=${orderId}`,
             {
                 headers: {
                     'Authorization': `Bearer ${CONFIG.TOKEN}`
@@ -589,8 +591,48 @@ async function searchOrderInSheet(orderId, phone) {
         
         return null;
     } catch (error) {
-        console.error('Error searching order:', error);
-        alert('حدث خطأ أثناء البحث');
+        console.error('Error searching order by ID:', error);
+        showNoResults();
+        return null;
+    }
+}
+
+/**
+ * Search order in Google Sheets by phone
+ * @param {string} phone - Phone number
+ */
+async function searchOrderInSheetByPhone(phone) {
+    try {
+        // TODO: Implement Google Sheets API integration
+        console.log('Searching by Phone in Google Sheets:', phone);
+        
+        /*
+        const response = await fetch(
+            `${CONFIG.API_URL}?sheetId=${CONFIG.SHEET_ID}&phone=${phone}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${CONFIG.TOKEN}`
+                }
+            }
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to search order');
+        }
+        
+        const data = await response.json();
+        
+        if (data && data.order) {
+            displayOrderDetails(data.order);
+        } else {
+            showNoResults();
+        }
+        */
+        
+        return null;
+    } catch (error) {
+        console.error('Error searching order by phone:', error);
+        showNoResults();
         return null;
     }
 }
@@ -632,14 +674,6 @@ async function updateOrderStatusInSheet(orderId, newStatus) {
         alert('حدث خطأ أثناء تحديث الحالة');
         return false;
     }
-}
-
-/**
- * Show no results message
- */
-function showNoResults() {
-    document.getElementById('noResults').style.display = 'block';
-    document.getElementById('orderDetailsCard').style.display = 'none';
 }
 
 // ========================================

@@ -1,6 +1,6 @@
 // ========================================
 // Shalaby OMS - JavaScript
-// Version: 1.2 (Fixed: Phone Zero, Search API, CORS)
+// Version: 1.2 (Fixed: Phone Zero, Search API, CORS, Update Status)
 // ========================================
 
 'use strict';
@@ -95,7 +95,7 @@ function initializeNewOrderPage() {
 }
 
 // ========================================
-// FIXED: handleNewOrderSubmit - GET request + phone as string
+// handleNewOrderSubmit - GET request + phone as string
 // ========================================
 async function handleNewOrderSubmit(e) {
     e.preventDefault();
@@ -113,10 +113,9 @@ async function handleNewOrderSubmit(e) {
     const formData = getFormData(form);
 
     try {
-        // ✅ بناء URL parameters مع ترميز صحيح
         const params = new URLSearchParams();
         params.append('customer', formData.customerName);
-        params.append('phone', String(formData.customerPhone)); // ✅ محفوظ كـ String عشان الـ 0
+        params.append('phone', String(formData.customerPhone));
         params.append('governorate', formData.governorate);
         params.append('address', formData.address);
         params.append('product', formData.product);
@@ -130,7 +129,6 @@ async function handleNewOrderSubmit(e) {
         const apiUrl = CONFIG.API_URL + "?" + params.toString();
         console.log("API URL:", apiUrl);
 
-        // ✅ GET request مع timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
 
@@ -301,7 +299,7 @@ function closeModalAndReset() {
 }
 
 // ========================================
-// FIXED: Update Order Page - with API search
+// Update Order Page Functions
 // ========================================
 function initializeUpdateOrderPage() {
     console.log('Update Order page initialized');
@@ -324,7 +322,7 @@ function initializeUpdateOrderPage() {
 }
 
 // ========================================
-// FIXED: searchOrder - connected to API
+// searchOrder - connected to API
 // ========================================
 async function searchOrder() {
     const orderId = document.getElementById('searchOrderId')?.value.trim();
@@ -338,7 +336,6 @@ async function searchOrder() {
     showLoading();
     
     try {
-        // ✅ بناء URL للبحث
         const params = new URLSearchParams();
         params.append('action', 'search');
         if (orderId) params.append('orderId', orderId);
@@ -377,24 +374,48 @@ async function searchOrder() {
     }
 }
 
+// ========================================
+// displayOrderDetails - store order properly
+// ========================================
 function displayOrderDetails(order) {
-    currentOrder = order;
+    console.log("displayOrderDetails received:", order);
+    
+    // ✅ Store order with guaranteed orderId
+    currentOrder = {
+        orderId: order.orderId || order.orderID || order.id || '',
+        orderDate: order.orderDate || '',
+        orderTime: order.orderTime || '',
+        customerName: order.customerName || '',
+        phone: order.phone || '',
+        governorate: order.governorate || '',
+        address: order.address || '',
+        product: order.product || '',
+        quantity: order.quantity || '',
+        price: order.price || '',
+        shipping: order.shipping || '',
+        payment: order.payment || '',
+        source: order.source || '',
+        status: order.status || 'جديد',
+        notes: order.notes || ''
+    };
+    
+    console.log("currentOrder set to:", currentOrder);
     
     document.getElementById('noResults').style.display = 'none';
     
-    document.getElementById('displayOrderId').textContent = order.orderId || '-';
-    document.getElementById('displayOrderDate').textContent = order.orderDate || '-';
-    document.getElementById('displayCustomerName').textContent = order.customerName || '-';
-    document.getElementById('displayPhone').textContent = order.phone || '-';
-    document.getElementById('displayProduct').textContent = order.product || '-';
-    document.getElementById('displayPrice').textContent = order.price || '-';
-    document.getElementById('displayAddress').textContent = order.address || '-';
-    document.getElementById('displayShipping').textContent = order.shipping || '-';
-    document.getElementById('displayPayment').textContent = order.payment || '-';
+    document.getElementById('displayOrderId').textContent = currentOrder.orderId || '-';
+    document.getElementById('displayOrderDate').textContent = currentOrder.orderDate || '-';
+    document.getElementById('displayCustomerName').textContent = currentOrder.customerName || '-';
+    document.getElementById('displayPhone').textContent = currentOrder.phone || '-';
+    document.getElementById('displayProduct').textContent = currentOrder.product || '-';
+    document.getElementById('displayPrice').textContent = currentOrder.price || '-';
+    document.getElementById('displayAddress').textContent = currentOrder.address || '-';
+    document.getElementById('displayShipping').textContent = currentOrder.shipping || '-';
+    document.getElementById('displayPayment').textContent = currentOrder.payment || '-';
     
     const statusBadge = document.getElementById('currentStatusBadge');
-    statusBadge.textContent = order.status || 'جديد';
-    statusBadge.className = 'status-badge ' + getStatusClass(order.status || 'جديد');
+    statusBadge.textContent = currentOrder.status || 'جديد';
+    statusBadge.className = 'status-badge ' + getStatusClass(currentOrder.status || 'جديد');
     
     const orderCard = document.getElementById('orderDetailsCard');
     orderCard.style.display = 'block';
@@ -419,15 +440,16 @@ function getStatusClass(status) {
 }
 
 // ========================================
-// FIXED: handleUpdateStatus - with DEBUG
+// handleUpdateStatus - send to API
 // ========================================
 async function handleUpdateStatus(e) {
     e.preventDefault();
     
     const newStatus = document.getElementById('newStatus')?.value;
     
-    console.log("DEBUG - newStatus:", newStatus);
-    console.log("DEBUG - currentOrder:", currentOrder);
+    console.log("=== UPDATE DEBUG START ===");
+    console.log("newStatus:", newStatus);
+    console.log("currentOrder:", currentOrder);
     
     if (!newStatus) {
         alert('من فضلك اختر الحالة الجديدة');
@@ -436,22 +458,28 @@ async function handleUpdateStatus(e) {
     
     if (!currentOrder) {
         alert('لم يتم اختيار أوردر');
-        console.error("DEBUG - currentOrder is null!");
+        console.error("currentOrder is null!");
         return;
     }
     
-    console.log("DEBUG - orderId:", currentOrder.orderId);
-    console.log("DEBUG - API_URL:", CONFIG.API_URL);
+    // ✅ Get orderId safely
+    const orderId = currentOrder.orderId;
+    console.log("orderId:", orderId);
     
-    // ✅ نبعت الطلب للـ API
+    if (!orderId) {
+        alert('رقم الأوردر غير موجود');
+        console.error("orderId is empty!", currentOrder);
+        return;
+    }
+    
     try {
         const params = new URLSearchParams();
         params.append('action', 'update');
-        params.append('orderId', currentOrder.orderId);
+        params.append('orderId', orderId);
         params.append('newStatus', newStatus);
         
         const apiUrl = CONFIG.API_URL + "?" + params.toString();
-        console.log("DEBUG - Update URL:", apiUrl);
+        console.log("Update URL:", apiUrl);
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
@@ -462,13 +490,13 @@ async function handleUpdateStatus(e) {
         });
         clearTimeout(timeoutId);
         
-        console.log("DEBUG - Response status:", response.status);
+        console.log("Response status:", response.status);
         
         const result = await response.json();
-        console.log("DEBUG - Update Result:", result);
+        console.log("Update Result:", result);
         
         if (result.success) {
-            // ✅ نحدّث الواجهة
+            // ✅ Update UI
             currentOrder.status = newStatus;
             
             const statusBadge = document.getElementById('currentStatusBadge');
@@ -478,15 +506,15 @@ async function handleUpdateStatus(e) {
             showUpdateSuccessModal();
             document.getElementById('updateStatusForm').reset();
         } else {
-            alert(result.message || "حدث خطأ أثناء التحديث");
+            alert('خطأ: ' + (result.message || 'حدث خطأ أثناء التحديث'));
         }
         
     } catch (err) {
-        console.error("DEBUG - Update Error:", err);
-        alert("تعذر الاتصال بالخادم: " + err.message);
+        console.error("Update Error:", err);
+        alert('تعذر الاتصال بالخادم: ' + err.message);
     }
+    console.log("=== UPDATE DEBUG END ===");
 }
-
 
 function showUpdateSuccessModal() {
     const modal = new bootstrap.Modal(document.getElementById('updateSuccessModal'));
@@ -511,4 +539,3 @@ function showNoResults() {
 // Console Info
 console.log('%c Shalaby OMS v1.2 ', 'background: #D32F2F; color: white; font-size: 16px; font-weight: bold; padding: 5px 10px;');
 console.log('%c Powered by OROOJ Agency ', 'background: #111; color: white; font-size: 12px; padding: 3px 8px;');
-

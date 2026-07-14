@@ -94,22 +94,93 @@ function initializeNewOrderPage() {
     }
 }
 
-function handleNewOrderSubmit(e) {
+async function handleNewOrderSubmit(e) {
+
     e.preventDefault();
-    
+
     const form = e.target;
-    
+
     if (!validateForm(form)) {
         return;
     }
-    
-    const formData = getFormData(form);
-    
-    console.log('New Order Data:', formData);
-    
-    showSuccessModal();
-}
 
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    const originalText = submitBtn.innerHTML;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'جارى الحفظ...';
+
+    try {
+
+        const formData = getFormData(form);
+
+        const payload = {
+
+            customer: formData.customerName,
+            phone: formData.customerPhone,
+            governorate: formData.governorate,
+            address: formData.address,
+            product: formData.product,
+            quantity: formData.quantity,
+            price: formData.price,
+            shipping: formData.shippingCompany,
+            payment: formData.paymentMethod,
+            source: formData.orderSource,
+            notes: formData.notes
+
+        };
+
+        const response = await fetch(CONFIG.API_URL, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(payload)
+
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+
+            const orderNumberElement =
+                document.getElementById('generatedOrderId');
+
+            if(orderNumberElement){
+                orderNumberElement.textContent =
+                    result.orderId;
+            }
+
+            showSuccessModal();
+
+        }else{
+
+            alert(result.message || "حدث خطأ أثناء التسجيل");
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("فشل الاتصال بالخادم");
+
+    }
+
+    finally{
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+
+    }
+
+}
 function getFormData(form) {
     const data = {};
     

@@ -1,8 +1,8 @@
 // Shalaby OMS - Configuration
 
 const CONFIG = {
-    SHEET_ID: '',
-    API_URL: '',
+    SHEET_ID: '1a9Ix_FL1aB3G-OBzCE24hSkPrFaXk5QT5vVqFq3_B6A',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzFXSMGzFz_RhE5IprtRyd4hFEG-gDR1FWm4GQTZj1gz68LtIoLCTiPcxDXfG5Q_Ihw1A/exec',
     TOKEN: '',
     
     APP_NAME: 'Shalaby OMS',
@@ -71,7 +71,7 @@ const CONFIG = {
 
 Object.freeze(CONFIG);
 
-if (!CONFIG.SHEET_ID || !CONFIG.API_URL || !CONFIG.TOKEN) {
+if (!CONFIG.SHEET_ID || !CONFIG.API_URL) {
     console.warn('%c⚠️ Configuration Warning', 'background: #FFC107; color: #000; font-size: 14px; font-weight: bold; padding: 5px 10px;');
     console.warn('Google Sheets credentials are not configured.');
 }

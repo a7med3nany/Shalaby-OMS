@@ -418,7 +418,10 @@ function getStatusClass(status) {
     return statusMap[status] || '';
 }
 
-function handleUpdateStatus(e) {
+// ========================================
+// FIXED: handleUpdateStatus - sends to API
+// ========================================
+async function handleUpdateStatus(e) {
     e.preventDefault();
     
     const newStatus = document.getElementById('newStatus')?.value;
@@ -433,21 +436,46 @@ function handleUpdateStatus(e) {
         return;
     }
     
-    console.log('Update Status:', {
-        orderId: currentOrder.orderId,
-        oldStatus: currentOrder.status,
-        newStatus: newStatus
-    });
-    
-    currentOrder.status = newStatus;
-    
-    const statusBadge = document.getElementById('currentStatusBadge');
-    statusBadge.textContent = newStatus;
-    statusBadge.className = 'status-badge ' + getStatusClass(newStatus);
-    
-    showUpdateSuccessModal();
-    
-    document.getElementById('updateStatusForm').reset();
+    // ✅ نبعت الطلب للـ API
+    try {
+        const params = new URLSearchParams();
+        params.append('action', 'update');
+        params.append('orderId', currentOrder.orderId);
+        params.append('newStatus', newStatus);
+        
+        const apiUrl = CONFIG.API_URL + "?" + params.toString();
+        console.log("Update URL:", apiUrl);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
+        
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        const result = await response.json();
+        console.log("Update Result:", result);
+        
+        if (result.success) {
+            // ✅ نحدّث الواجهة
+            currentOrder.status = newStatus;
+            
+            const statusBadge = document.getElementById('currentStatusBadge');
+            statusBadge.textContent = newStatus;
+            statusBadge.className = 'status-badge ' + getStatusClass(newStatus);
+            
+            showUpdateSuccessModal();
+            document.getElementById('updateStatusForm').reset();
+        } else {
+            alert(result.message || "حدث خطأ أثناء التحديث");
+        }
+        
+    } catch (err) {
+        console.error("Update Error:", err);
+        alert("تعذر الاتصال بالخادم");
+    }
 }
 
 function showUpdateSuccessModal() {

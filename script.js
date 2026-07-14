@@ -95,48 +95,59 @@ function initializeNewOrderPage() {
 }
 
 async function handleNewOrderSubmit(e) {
+async function handleNewOrderSubmit(e) {
 
     e.preventDefault();
 
     const form = e.target;
 
-    if (!validateForm(form)) {
-        return;
-    }
+    if (!validateForm(form)) return;
 
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = form.querySelector("button[type='submit']");
 
-    const originalText = submitBtn.innerHTML;
+    const oldText = submitBtn.innerHTML;
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = 'جارى الحفظ...';
+    submitBtn.innerHTML = "جارى الحفظ...";
+
+    const formData = getFormData(form);
+
+    const payload = {
+
+        customer: formData.customerName,
+
+        phone: formData.customerPhone,
+
+        governorate: formData.governorate,
+
+        address: formData.address,
+
+        product: formData.product,
+
+        quantity: formData.quantity,
+
+        price: formData.price,
+
+        shipping: formData.shippingCompany,
+
+        payment: formData.paymentMethod,
+
+        source: formData.orderSource,
+
+        notes: formData.notes
+
+    };
 
     try {
-
-        const formData = getFormData(form);
-
-        const payload = {
-
-            customer: formData.customerName,
-            phone: formData.customerPhone,
-            governorate: formData.governorate,
-            address: formData.address,
-            product: formData.product,
-            quantity: formData.quantity,
-            price: formData.price,
-            shipping: formData.shippingCompany,
-            payment: formData.paymentMethod,
-            source: formData.orderSource,
-            notes: formData.notes
-
-        };
 
         const response = await fetch(CONFIG.API_URL, {
 
             method: "POST",
 
             headers: {
+
                 "Content-Type": "application/json"
+
             },
 
             body: JSON.stringify(payload)
@@ -145,38 +156,39 @@ async function handleNewOrderSubmit(e) {
 
         const result = await response.json();
 
-        if(result.success){
+        if (result.success) {
 
-            const orderNumberElement =
-                document.getElementById('generatedOrderId');
+            const id = document.getElementById("generatedOrderId");
 
-            if(orderNumberElement){
-                orderNumberElement.textContent =
-                    result.orderId;
+            if (id) {
+
+                id.innerText = "رقم الأوردر : " + result.orderId;
+
             }
 
             showSuccessModal();
 
-        }else{
+        } else {
 
-            alert(result.message || "حدث خطأ أثناء التسجيل");
+            alert(result.message);
 
         }
 
     }
 
-    catch(error){
+    catch (err) {
 
-        console.error(error);
+        console.error(err);
 
-        alert("فشل الاتصال بالخادم");
+        alert("تعذر الاتصال بالخادم");
 
     }
 
-    finally{
+    finally {
 
         submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
+
+        submitBtn.innerHTML = oldText;
 
     }
 

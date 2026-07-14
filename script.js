@@ -1,6 +1,6 @@
 // ========================================
 // Shalaby OMS - JavaScript
-// Version: 1.0
+// Version: 1.2 (Fixed: Phone Zero, Search API, CORS)
 // ========================================
 
 'use strict';
@@ -94,9 +94,8 @@ function initializeNewOrderPage() {
     }
 }
 
-
 // ========================================
-// FIXED: handleNewOrderSubmit - uses GET instead of POST
+// FIXED: handleNewOrderSubmit - GET request + phone as string
 // ========================================
 async function handleNewOrderSubmit(e) {
     e.preventDefault();
@@ -113,30 +112,40 @@ async function handleNewOrderSubmit(e) {
 
     const formData = getFormData(form);
 
-    // ✅ بناء URL parameters (GET request)
-    const params = new URLSearchParams({
-        customer: formData.customerName,
-        phone: formData.customerPhone,
-        governorate: formData.governorate,
-        address: formData.address,
-        product: formData.product,
-        quantity: formData.quantity,
-        price: formData.price,
-        shipping: formData.shippingCompany,
-        payment: formData.paymentMethod,
-        source: formData.orderSource,
-        notes: formData.notes
-    });
-
     try {
-        console.log(CONFIG.API_URL + "?" + params.toString());
+        // ✅ بناء URL parameters مع ترميز صحيح
+        const params = new URLSearchParams();
+        params.append('customer', formData.customerName);
+        params.append('phone', String(formData.customerPhone)); // ✅ محفوظ كـ String عشان الـ 0
+        params.append('governorate', formData.governorate);
+        params.append('address', formData.address);
+        params.append('product', formData.product);
+        params.append('quantity', formData.quantity);
+        params.append('price', formData.price);
+        params.append('shipping', formData.shippingCompany);
+        params.append('payment', formData.paymentMethod);
+        params.append('source', formData.orderSource);
+        params.append('notes', formData.notes);
 
-        // ✅ GET request (No CORS issues)
-        const response = await fetch(CONFIG.API_URL + "?" + params.toString(), {
-            method: "GET"
+        const apiUrl = CONFIG.API_URL + "?" + params.toString();
+        console.log("API URL:", apiUrl);
+
+        // ✅ GET request مع timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
+
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+        }
 
         const result = await response.json();
+        console.log("Response:", result);
 
         if (result.success) {
             const id = document.getElementById("generatedOrderId");
@@ -145,12 +154,20 @@ async function handleNewOrderSubmit(e) {
             }
             showSuccessModal();
         } else {
-            alert(result.message);
+            alert(result.message || "حدث خطأ أثناء الحفظ");
         }
 
     } catch (err) {
-        console.error(err);
-        alert("تعذر الاتصال بالخادم");
+        console.error("Error:", err);
+        
+        if (err.name === 'AbortError') {
+            alert("انتهى وقت الانتظار. تأكد من اتصال الإنترنت.");
+        } else if (err.message.includes('Failed to fetch')) {
+            alert("تعذر الاتصال بالخادم. تأكد من الرابط.");
+        } else {
+            alert("خطأ: " + err.message);
+        }
+        
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = oldText;
@@ -160,17 +177,17 @@ async function handleNewOrderSubmit(e) {
 function getFormData(form) {
     const data = {};
     
-    data.customerName = document.getElementById('customerName')?.value || '';
-    data.customerPhone = document.getElementById('customerPhone')?.value || '';
+    data.customerName = document.getElementById('customerName')?.value?.trim() || '';
+    data.customerPhone = document.getElementById('customerPhone')?.value?.trim() || '';
     data.governorate = document.getElementById('governorate')?.value || '';
-    data.address = document.getElementById('address')?.value || '';
-    data.product = document.getElementById('product')?.value || '';
-    data.quantity = document.getElementById('quantity')?.value || '';
-    data.price = document.getElementById('price')?.value || '';
+    data.address = document.getElementById('address')?.value?.trim() || '';
+    data.product = document.getElementById('product')?.value?.trim() || '';
+    data.quantity = document.getElementById('quantity')?.value || '1';
+    data.price = document.getElementById('price')?.value || '0';
     data.shippingCompany = document.getElementById('shippingCompany')?.value || '';
     data.paymentMethod = document.getElementById('paymentMethod')?.value || '';
     data.orderSource = document.getElementById('orderSource')?.value || '';
-    data.notes = document.getElementById('notes')?.value || '';
+    data.notes = document.getElementById('notes')?.value?.trim() || '';
     data.timestamp = new Date().toISOString();
     data.status = 'جديد';
     
@@ -283,7 +300,9 @@ function closeModalAndReset() {
     }
 }
 
-// Update Order Page Functions
+// ========================================
+// FIXED: Update Order Page - with API search
+// ========================================
 function initializeUpdateOrderPage() {
     console.log('Update Order page initialized');
     
@@ -304,7 +323,10 @@ function initializeUpdateOrderPage() {
     }
 }
 
-function searchOrder() {
+// ========================================
+// FIXED: searchOrder - connected to API
+// ========================================
+async function searchOrder() {
     const orderId = document.getElementById('searchOrderId')?.value.trim();
     const phone = document.getElementById('searchPhone')?.value.trim();
     
@@ -315,16 +337,44 @@ function searchOrder() {
     
     showLoading();
     
-    if (orderId) {
-        console.log('Searching by Order ID:', orderId);
-    } else if (phone) {
-        console.log('Searching by Phone:', phone);
-    }
-    
-    setTimeout(() => {
+    try {
+        // ✅ بناء URL للبحث
+        const params = new URLSearchParams();
+        params.append('action', 'search');
+        if (orderId) params.append('orderId', orderId);
+        if (phone) params.append('phone', phone);
+        
+        const apiUrl = CONFIG.API_URL + "?" + params.toString();
+        console.log("Search URL:", apiUrl);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
+        
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        const result = await response.json();
+        console.log("Search Result:", result);
+        
+        if (result.success && result.order) {
+            displayOrderDetails(result.order);
+        } else {
+            showNoResults();
+            if (result.message) {
+                alert(result.message);
+            }
+        }
+        
+    } catch (err) {
+        console.error("Search Error:", err);
+        alert("تعذر الاتصال بالخادم");
         showNoResults();
+    } finally {
         hideLoading();
-    }, 1500);
+    }
 }
 
 function displayOrderDetails(order) {
@@ -339,8 +389,8 @@ function displayOrderDetails(order) {
     document.getElementById('displayProduct').textContent = order.product || '-';
     document.getElementById('displayPrice').textContent = order.price || '-';
     document.getElementById('displayAddress').textContent = order.address || '-';
-    document.getElementById('displayShipping').textContent = order.shippingCompany || '-';
-    document.getElementById('displayPayment').textContent = order.paymentMethod || '-';
+    document.getElementById('displayShipping').textContent = order.shipping || '-';
+    document.getElementById('displayPayment').textContent = order.payment || '-';
     
     const statusBadge = document.getElementById('currentStatusBadge');
     statusBadge.textContent = order.status || 'جديد';
@@ -421,5 +471,6 @@ function showNoResults() {
 }
 
 // Console Info
-console.log('%c Shalaby OMS v1.0 ', 'background: #D32F2F; color: white; font-size: 16px; font-weight: bold; padding: 5px 10px;');
+console.log('%c Shalaby OMS v1.2 ', 'background: #D32F2F; color: white; font-size: 16px; font-weight: bold; padding: 5px 10px;');
 console.log('%c Powered by OROOJ Agency ', 'background: #111; color: white; font-size: 12px; padding: 3px 8px;');
+

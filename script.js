@@ -95,8 +95,10 @@ function initializeNewOrderPage() {
 }
 
 
+// ========================================
+// FIXED: handleNewOrderSubmit - uses GET instead of POST
+// ========================================
 async function handleNewOrderSubmit(e) {
-
     e.preventDefault();
 
     const form = e.target;
@@ -104,7 +106,6 @@ async function handleNewOrderSubmit(e) {
     if (!validateForm(form)) return;
 
     const submitBtn = form.querySelector("button[type='submit']");
-
     const oldText = submitBtn.innerHTML;
 
     submitBtn.disabled = true;
@@ -112,89 +113,50 @@ async function handleNewOrderSubmit(e) {
 
     const formData = getFormData(form);
 
-    const payload = {
-
+    // ✅ بناء URL parameters (GET request)
+    const params = new URLSearchParams({
         customer: formData.customerName,
-
         phone: formData.customerPhone,
-
         governorate: formData.governorate,
-
         address: formData.address,
-
         product: formData.product,
-
         quantity: formData.quantity,
-
         price: formData.price,
-
         shipping: formData.shippingCompany,
-
         payment: formData.paymentMethod,
-
         source: formData.orderSource,
-
         notes: formData.notes
-
-    };
+    });
 
     try {
+        console.log(CONFIG.API_URL + "?" + params.toString());
 
-        console.log(CONFIG.API_URL);
-
-const response = await fetch(CONFIG.API_URL, {
-
-            method: "POST",
-
-            headers: {
-
-                "Content-Type": "application/json"
-
-            },
-
-            body: JSON.stringify(payload)
-
+        // ✅ GET request (No CORS issues)
+        const response = await fetch(CONFIG.API_URL + "?" + params.toString(), {
+            method: "GET"
         });
 
         const result = await response.json();
 
         if (result.success) {
-
             const id = document.getElementById("generatedOrderId");
-
             if (id) {
-
                 id.innerText = "رقم الأوردر : " + result.orderId;
-
             }
-
             showSuccessModal();
-
         } else {
-
             alert(result.message);
-
         }
 
-    }
-
-    catch (err) {
-
+    } catch (err) {
         console.error(err);
-
         alert("تعذر الاتصال بالخادم");
-
-    }
-
-    finally {
-
+    } finally {
         submitBtn.disabled = false;
-
         submitBtn.innerHTML = oldText;
-
     }
-
 }
+
 function getFormData(form) {
     const data = {};
     

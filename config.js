@@ -2,7 +2,7 @@
 
 const CONFIG = {
     SHEET_ID: '1a9Ix_FL1aB3G-OBzCE24hSkPrFaXk5QT5vVqFq3_B6A',
-    API_URL: 'https://script.google.com/macros/s/AKfycbzdKGc5kglj8LfA_OPbfYu-o0d6RFipx41myW3jLC0IJCnpECY7FODh5clHMlsvB2QFtA/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbygGNX__H0HPodvnFj868bO9VYTIreRV3_3OnvaVrjCwumgbPxk9Kh0_EYcESjudHakQQ/exec',
     TOKEN: '',
     
     APP_NAME: 'Shalaby OMS',

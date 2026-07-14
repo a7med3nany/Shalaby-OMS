@@ -1,950 +1,378 @@
-/* ========================================
-   CSS Variables
-   ======================================== */
-:root {
-    /* Colors */
-    --color-primary: #D32F2F;
-    --color-primary-dark: #B71C1C;
-    --color-primary-light: #EF5350;
-    --color-dark: #111111;
-    --color-white: #FFFFFF;
-    --color-background: #F6F7FB;
-    --color-text: #2C3E50;
-    --color-text-light: #6C757D;
-    --color-border: #E0E6ED;
-    --color-success: #28A745;
-    --color-warning: #FFC107;
-    --color-danger: #DC3545;
-    --color-info: #17A2B8;
+// ========================================
+// Shalaby OMS - JavaScript
+// Version: 1.0
+// ========================================
+
+'use strict';
+
+// Global Variables
+let currentOrder = null;
+
+// Navigation Functions
+function navigateTo(page) {
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+        window.location.href = page;
+    }, 200);
+}
+
+// Page Load Animations
+window.addEventListener('DOMContentLoaded', () => {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.3s ease';
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
-    --gradient-overlay: linear-gradient(135deg, rgba(211, 47, 47, 0.05) 0%, rgba(183, 28, 28, 0.05) 100%);
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
     
-    /* Spacing */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-    --spacing-xxl: 4rem;
+    initializePage();
+});
+
+// Initialize Page Functions
+function initializePage() {
+    const currentPage = getCurrentPage();
     
-    /* Border Radius */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
-    --radius-round: 50%;
+    switch(currentPage) {
+        case 'index':
+            initializeHomePage();
+            break;
+        case 'new-order':
+            initializeNewOrderPage();
+            break;
+        case 'update-order':
+            initializeUpdateOrderPage();
+            break;
+    }
+}
+
+function getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop().replace('.html', '') || 'index';
+    return page;
+}
+
+// Home Page Functions
+function initializeHomePage() {
+    console.log('Home page initialized');
     
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+    const cards = document.querySelectorAll('.action-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-10px)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+}
+
+// New Order Page Functions
+function initializeNewOrderPage() {
+    console.log('New Order page initialized');
     
-    /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
+    const form = document.getElementById('newOrderForm');
     
-    /* Glass Effect */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-blur: 10px;
-}
-
-/* ========================================
-   Global Reset & Base Styles
-   ======================================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Cairo', sans-serif;
-    background: var(--color-background);
-    color: var(--color-text);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
-    min-height: 100vh;
-    position: relative;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-overlay);
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* ========================================
-   Typography
-   ======================================== */
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.3;
-    color: var(--color-dark);
-}
-
-p {
-    margin-bottom: 1rem;
-}
-
-a {
-    text-decoration: none;
-    color: var(--color-primary);
-    transition: var(--transition-fast);
-}
-
-a:hover {
-    color: var(--color-primary-dark);
-}
-
-/* ========================================
-   Glass Effect
-   ======================================== */
-.glass-effect {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-md);
-}
-
-/* ========================================
-   Animations
-   ======================================== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
+    if (form) {
+        form.addEventListener('submit', handleNewOrderSubmit);
+        
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', validateInput);
+            input.addEventListener('input', clearValidationError);
+        });
+        
+        const phoneInput = document.getElementById('customerPhone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', formatPhoneNumber);
+        }
+        
+        const priceInput = document.getElementById('price');
+        if (priceInput) {
+            priceInput.addEventListener('blur', formatPrice);
+        }
     }
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-.animate-fade-in {
-    animation: fadeIn 0.6s ease;
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 0.6s ease;
-}
-
-.animate-scale {
-    animation: scaleIn 0.4s ease;
-}
-
-/* ========================================
-   Main Container (Home Page)
-   ======================================== */
-.main-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-lg);
-}
-
-/* ========================================
-   Logo Section
-   ======================================== */
-.logo-section {
-    margin-bottom: var(--spacing-xl);
-}
-
-.logo-wrapper {
-    width: 140px;
-    height: 140px;
-    margin: 0 auto;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.main-logo {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(var(--shadow-md));
-    transition: var(--transition-normal);
-}
-
-.main-logo:hover {
-    transform: scale(1.1) rotate(5deg);
-}
-
-/* ========================================
-   Title Section
-   ======================================== */
-.title-section {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-}
-
-.main-title {
-    font-size: 3rem;
-    font-weight: 900;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: var(--spacing-sm);
-    letter-spacing: -1px;
-}
-
-.main-subtitle {
-    font-size: 1.25rem;
-    color: var(--color-text-light);
-    font-weight: 400;
-}
-
-/* ========================================
-   Cards Container
-   ======================================== */
-.cards-container {
-    width: 100%;
-    max-width: 900px;
-    margin-bottom: var(--spacing-xl);
-}
-
-/* ========================================
-   Action Cards
-   ======================================== */
-.action-card {
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-xl);
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    position: relative;
-    overflow: hidden;
-    height: 100%;
-    min-height: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.action-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-primary);
-    opacity: 0;
-    transition: var(--transition-normal);
-    z-index: 0;
-}
-
-.action-card:hover::before {
-    opacity: 0.05;
-}
-
-.action-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-xl);
-}
-
-.action-card:active {
-    transform: translateY(-5px);
-}
-
-.card-icon {
-    font-size: 4rem;
-    color: var(--color-primary);
-    margin-bottom: var(--spacing-md);
-    position: relative;
-    z-index: 1;
-    transition: var(--transition-normal);
-}
-
-.action-card:hover .card-icon {
-    transform: scale(1.1);
-    animation: pulse 1s infinite;
-}
-
-.card-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin-bottom: var(--spacing-sm);
-    position: relative;
-    z-index: 1;
-}
-
-.card-description {
-    font-size: 1rem;
-    color: var(--color-text-light);
-    margin-bottom: 0;
-    position: relative;
-    z-index: 1;
-}
-
-.card-arrow {
-    position: absolute;
-    bottom: var(--spacing-lg);
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.5rem;
-    color: var(--color-primary);
-    opacity: 0;
-    transition: var(--transition-normal);
-    z-index: 1;
-}
-
-.action-card:hover .card-arrow {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-5px);
-}
-
-/* ========================================
-   Footer
-   ======================================== */
-.main-footer {
-    text-align: center;
-    margin-top: auto;
-    padding-top: var(--spacing-lg);
-}
-
-.footer-version {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
-    margin-bottom: var(--spacing-xs);
-}
-
-.footer-credits {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
-}
-
-.footer-credits .highlight {
-    color: var(--color-primary);
-    font-weight: 700;
-}
-
-/* ========================================
-   Page Header
-   ======================================== */
-.page-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    padding: var(--spacing-md) 0;
-    margin-bottom: var(--spacing-xl);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-}
-
-.btn-back {
-    background: var(--color-white);
-    border: none;
-    width: 45px;
-    height: 45px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    box-shadow: var(--shadow-sm);
-    color: var(--color-dark);
-    font-size: 1.25rem;
-}
-
-.btn-back:hover {
-    background: var(--color-primary);
-    color: var(--color-white);
-    transform: translateX(5px);
-}
-
-.page-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin: 0;
-    flex: 1;
-    text-align: center;
-}
-
-.header-spacer {
-    width: 45px;
-}
-
-/* ========================================
-   Page Container
-   ======================================== */
-.page-container {
-    padding: 0 0 var(--spacing-xxl) 0;
-}
-
-/* ========================================
-   Form Card
-   ======================================== */
-.form-card {
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
-}
-
-/* ========================================
-   Form Sections
-   ======================================== */
-.form-section {
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.form-section:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin-bottom: var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.section-title i {
-    color: var(--color-primary);
-    font-size: 1.5rem;
-}
-
-/* ========================================
-   Form Elements
-   ======================================== */
-.form-group {
-    margin-bottom: 0;
-}
-
-.form-label {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-dark);
-    margin-bottom: var(--spacing-xs);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.form-label i {
-    color: var(--color-primary);
-    font-size: 1rem;
-}
-
-.form-control,
-.form-select {
-    height: 50px;
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 0 var(--spacing-md);
-    font-size: 1rem;
-    font-family: 'Cairo', sans-serif;
-    transition: var(--transition-fast);
-    background: var(--color-white);
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 0.2rem rgba(211, 47, 47, 0.1);
-    outline: none;
-}
-
-textarea.form-control {
-    height: auto;
-    padding: var(--spacing-md);
-    resize: vertical;
-}
-
-.form-control::placeholder {
-    color: var(--color-text-light);
-    opacity: 0.7;
-}
-
-.invalid-feedback {
-    display: none;
-    color: var(--color-danger);
-    font-size: 0.875rem;
-    margin-top: var(--spacing-xs);
-}
-
-.form-control.is-invalid,
-.form-select.is-invalid {
-    border-color: var(--color-danger);
-}
-
-.form-control.is-invalid ~ .invalid-feedback,
-.form-select.is-invalid ~ .invalid-feedback {
-    display: block;
-}
-
-/* ========================================
-   Buttons
-   ======================================== */
-.btn {
-    font-family: 'Cairo', sans-serif;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1.5rem;
-    transition: var(--transition-fast);
-    border: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-}
-
-.btn-primary {
-    background: var(--gradient-primary);
-    color: var(--color-white);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-primary:hover {
-    background: var(--color-primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.btn-primary:active {
-    transform: translateY(0);
-}
-
-.btn-lg {
-    padding: 1rem 2rem;
-    font-size: 1.125rem;
-}
-
-.btn-submit {
-    width: 100%;
-    max-width: 400px;
-    margin: var(--spacing-lg) auto 0;
-    display: flex;
-}
-
-/* ========================================
-   Form Actions
-   ======================================== */
-.form-actions {
-    text-align: center;
-    padding-top: var(--spacing-lg);
-}
-
-/* ========================================
-   Search Card
-   ======================================== */
-.search-card {
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
-}
-
-/* ========================================
-   Order Details Card
-   ======================================== */
-.order-details-card {
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    margin-top: var(--spacing-xl);
-}
-
-/* ========================================
-   Order Info Grid
-   ======================================== */
-.order-info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.info-item {
-    background: var(--color-white);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-}
-
-.info-item.full-width {
-    grid-column: 1 / -1;
-}
-
-.info-label {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
-    margin-bottom: var(--spacing-xs);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.info-label i {
-    color: var(--color-primary);
-}
-
-.info-value {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--color-dark);
-}
-
-/* ========================================
-   Status Section
-   ======================================== */
-.current-status-section {
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.status-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--color-dark);
-    margin-bottom: var(--spacing-md);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.status-title i {
-    color: var(--color-primary);
-}
-
-.status-badge-container {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    font-size: 1rem;
-    background: var(--color-primary);
-    color: var(--color-white);
-}
-
-.status-badge.status-new {
-    background: var(--color-info);
-}
-
-.status-badge.status-reviewing {
-    background: var(--color-warning);
-}
-
-.status-badge.status-preparing {
-    background: #6F42C1;
-}
-
-.status-badge.status-shipped {
-    background: #007BFF;
-}
-
-.status-badge.status-delivered {
-    background: var(--color-success);
-}
-
-.status-badge.status-cancelled {
-    background: var(--color-danger);
-}
-
-.status-badge.status-returned {
-    background: #6C757D;
-}
-
-/* ========================================
-   Update Status Section
-   ======================================== */
-.update-status-section {
-    margin-top: var(--spacing-xl);
-}
-
-/* ========================================
-   Loading Spinner
-   ======================================== */
-.loading-spinner {
-    text-align: center;
-    padding: var(--spacing-xxl);
-}
-
-.loading-spinner .spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
-
-.loading-spinner p {
-    margin-top: var(--spacing-md);
-    color: var(--color-text-light);
-    font-weight: 600;
-}
-
-/* ========================================
-   No Results
-   ======================================== */
-.no-results {
-    text-align: center;
-    padding: var(--spacing-xxl);
-    border-radius: var(--radius-xl);
-    margin-top: var(--spacing-xl);
-}
-
-.no-results-icon {
-    font-size: 4rem;
-    color: var(--color-text-light);
-    margin-bottom: var(--spacing-md);
-    opacity: 0.5;
-}
-
-.no-results h3 {
-    font-size: 1.5rem;
-    margin-bottom: var(--spacing-sm);
-}
-
-.no-results p {
-    margin-bottom: 0;
-}
-
-/* ========================================
-   Modal
-   ======================================== */
-.modal-content {
-    border: none;
-    border-radius: var(--radius-xl);
-}
-
-.success-icon {
-    font-size: 4rem;
-    color: var(--color-success);
-}
-
-.success-icon i {
-    animation: scaleIn 0.5s ease;
-}
-
-/* ========================================
-   Responsive Design
-   ======================================== */
-
-/* Tablet */
-@media (max-width: 992px) {
-    .main-title {
-        font-size: 2.5rem;
+function handleNewOrderSubmit(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    
+    if (!validateForm(form)) {
+        return;
     }
     
-    .main-subtitle {
-        font-size: 1.125rem;
+    const formData = getFormData(form);
+    
+    console.log('New Order Data:', formData);
+    
+    showSuccessModal();
+}
+
+function getFormData(form) {
+    const data = {};
+    
+    data.customerName = document.getElementById('customerName')?.value || '';
+    data.customerPhone = document.getElementById('customerPhone')?.value || '';
+    data.governorate = document.getElementById('governorate')?.value || '';
+    data.address = document.getElementById('address')?.value || '';
+    data.product = document.getElementById('product')?.value || '';
+    data.quantity = document.getElementById('quantity')?.value || '';
+    data.price = document.getElementById('price')?.value || '';
+    data.shippingCompany = document.getElementById('shippingCompany')?.value || '';
+    data.paymentMethod = document.getElementById('paymentMethod')?.value || '';
+    data.orderSource = document.getElementById('orderSource')?.value || '';
+    data.notes = document.getElementById('notes')?.value || '';
+    data.timestamp = new Date().toISOString();
+    data.status = 'جديد';
+    
+    return data;
+}
+
+function validateForm(form) {
+    let isValid = true;
+    
+    const requiredFields = form.querySelectorAll('[required]');
+    
+    requiredFields.forEach(field => {
+        if (!validateInput({ target: field })) {
+            isValid = false;
+        }
+    });
+    
+    return isValid;
+}
+
+function validateInput(e) {
+    const input = e.target;
+    const value = input.value.trim();
+    
+    if (input.hasAttribute('required') && !value) {
+        showValidationError(input);
+        return false;
     }
     
-    .action-card {
-        min-height: 240px;
-        padding: var(--spacing-lg);
+    if (input.id === 'customerPhone' && value) {
+        if (!isValidPhone(value)) {
+            showValidationError(input, 'رقم التليفون غير صحيح');
+            return false;
+        }
     }
     
-    .card-icon {
-        font-size: 3.5rem;
+    if (input.id === 'price' && value) {
+        if (parseFloat(value) <= 0) {
+            showValidationError(input, 'السعر يجب أن يكون أكبر من صفر');
+            return false;
+        }
     }
     
-    .card-title {
-        font-size: 1.5rem;
+    if (input.id === 'quantity' && value) {
+        if (parseInt(value) <= 0) {
+            showValidationError(input, 'الكمية يجب أن تكون أكبر من صفر');
+            return false;
+        }
+    }
+    
+    clearValidationError(e);
+    return true;
+}
+
+function isValidPhone(phone) {
+    const phoneRegex = /^(010|011|012|015)\d{8}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+}
+
+function showValidationError(input, message = null) {
+    input.classList.add('is-invalid');
+    
+    if (message) {
+        const feedback = input.parentElement.querySelector('.invalid-feedback');
+        if (feedback) {
+            feedback.textContent = message;
+        }
     }
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    :root {
-        --spacing-xl: 2rem;
-        --spacing-xxl: 3rem;
+function clearValidationError(e) {
+    const input = e.target;
+    input.classList.remove('is-invalid');
+}
+
+function formatPhoneNumber(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length > 11) {
+        value = value.substr(0, 11);
     }
     
-    .main-container {
-        padding: var(--spacing-md);
-    }
+    e.target.value = value;
+}
+
+function formatPrice(e) {
+    const value = parseFloat(e.target.value);
     
-    .main-title {
-        font-size: 2rem;
-    }
-    
-    .main-subtitle {
-        font-size: 1rem;
-    }
-    
-    .logo-wrapper {
-        width: 110px;
-        height: 110px;
-    }
-    
-    .action-card {
-        min-height: 200px;
-        padding: var(--spacing-md);
-    }
-    
-    .card-icon {
-        font-size: 3rem;
-    }
-    
-    .card-title {
-        font-size: 1.25rem;
-    }
-    
-    .card-description {
-        font-size: 0.9rem;
-    }
-    
-    .page-title {
-        font-size: 1.5rem;
-    }
-    
-    .form-card,
-    .search-card,
-    .order-details-card {
-        padding: var(--spacing-lg);
-    }
-    
-    .section-title {
-        font-size: 1.125rem;
-    }
-    
-    .order-info-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .btn-submit {
-        max-width: 100%;
+    if (!isNaN(value)) {
+        e.target.value = value.toFixed(2);
     }
 }
 
-/* Small Mobile */
-@media (max-width: 480px) {
-    .main-title {
-        font-size: 1.75rem;
-    }
+function showSuccessModal() {
+    const modal = new bootstrap.Modal(document.getElementById('successModal'));
+    modal.show();
+}
+
+function closeModalAndReset() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
+    modal.hide();
     
-    .form-card,
-    .search-card,
-    .order-details-card {
-        padding: var(--spacing-md);
-    }
-    
-    .card-arrow {
-        display: none;
+    const form = document.getElementById('newOrderForm');
+    if (form) {
+        form.reset();
+        
+        form.querySelectorAll('.is-invalid').forEach(input => {
+            input.classList.remove('is-invalid');
+        });
     }
 }
 
-/* ========================================
-   Print Styles
-   ======================================== */
-@media print {
-    .page-header,
-    .btn-back,
-    .form-actions,
-    .update-status-section,
-    .search-card {
-        display: none;
+// Update Order Page Functions
+function initializeUpdateOrderPage() {
+    console.log('Update Order page initialized');
+    
+    const updateForm = document.getElementById('updateStatusForm');
+    
+    const searchInputs = document.querySelectorAll('#searchOrderId, #searchPhone');
+    searchInputs.forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchOrder();
+            }
+        });
+    });
+    
+    if (updateForm) {
+        updateForm.addEventListener('submit', handleUpdateStatus);
+    }
+}
+
+function searchOrder() {
+    const orderId = document.getElementById('searchOrderId')?.value.trim();
+    const phone = document.getElementById('searchPhone')?.value.trim();
+    
+    if (!orderId && !phone) {
+        alert('من فضلك أدخل رقم الأوردر أو رقم الموبايل');
+        return;
     }
     
-    .glass-effect {
-        background: white;
-        box-shadow: none;
+    showLoading();
+    
+    if (orderId) {
+        console.log('Searching by Order ID:', orderId);
+    } else if (phone) {
+        console.log('Searching by Phone:', phone);
     }
     
-    body {
-        background: white;
+    setTimeout(() => {
+        showNoResults();
+        hideLoading();
+    }, 1500);
+}
+
+function displayOrderDetails(order) {
+    currentOrder = order;
+    
+    document.getElementById('noResults').style.display = 'none';
+    
+    document.getElementById('displayOrderId').textContent = order.orderId || '-';
+    document.getElementById('displayOrderDate').textContent = order.orderDate || '-';
+    document.getElementById('displayCustomerName').textContent = order.customerName || '-';
+    document.getElementById('displayPhone').textContent = order.phone || '-';
+    document.getElementById('displayProduct').textContent = order.product || '-';
+    document.getElementById('displayPrice').textContent = order.price || '-';
+    document.getElementById('displayAddress').textContent = order.address || '-';
+    document.getElementById('displayShipping').textContent = order.shippingCompany || '-';
+    document.getElementById('displayPayment').textContent = order.paymentMethod || '-';
+    
+    const statusBadge = document.getElementById('currentStatusBadge');
+    statusBadge.textContent = order.status || 'جديد';
+    statusBadge.className = 'status-badge ' + getStatusClass(order.status || 'جديد');
+    
+    const orderCard = document.getElementById('orderDetailsCard');
+    orderCard.style.display = 'block';
+    
+    setTimeout(() => {
+        orderCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        'جديد': 'status-new',
+        'جارى المراجعة': 'status-reviewing',
+        'جارى التجهيز': 'status-preparing',
+        'تم الشحن': 'status-shipped',
+        'تم التسليم': 'status-delivered',
+        'ملغى': 'status-cancelled',
+        'مرتجع': 'status-returned'
+    };
+    
+    return statusMap[status] || '';
+}
+
+function handleUpdateStatus(e) {
+    e.preventDefault();
+    
+    const newStatus = document.getElementById('newStatus')?.value;
+    
+    if (!newStatus) {
+        alert('من فضلك اختر الحالة الجديدة');
+        return;
     }
-}
-
-/* ========================================
-   Accessibility
-   ======================================== */
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Focus Styles */
-*:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    
+    if (!currentOrder) {
+        alert('لم يتم اختيار أوردر');
+        return;
     }
+    
+    console.log('Update Status:', {
+        orderId: currentOrder.orderId,
+        oldStatus: currentOrder.status,
+        newStatus: newStatus
+    });
+    
+    currentOrder.status = newStatus;
+    
+    const statusBadge = document.getElementById('currentStatusBadge');
+    statusBadge.textContent = newStatus;
+    statusBadge.className = 'status-badge ' + getStatusClass(newStatus);
+    
+    showUpdateSuccessModal();
+    
+    document.getElementById('updateStatusForm').reset();
 }
+
+function showUpdateSuccessModal() {
+    const modal = new bootstrap.Modal(document.getElementById('updateSuccessModal'));
+    modal.show();
+}
+
+function showLoading() {
+    document.getElementById('loadingSpinner').style.display = 'block';
+    document.getElementById('orderDetailsCard').style.display = 'none';
+    document.getElementById('noResults').style.display = 'none';
+}
+
+function hideLoading() {
+    document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+function showNoResults() {
+    document.getElementById('noResults').style.display = 'block';
+    document.getElementById('orderDetailsCard').style.display = 'none';
+}
+
+// Console Info
+console.log('%c Shalaby OMS v1.0 ', 'background: #D32F2F; color: white; font-size: 16px; font-weight: bold; padding: 5px 10px;');
+console.log('%c Powered by OROOJ Agency ', 'background: #111; color: white; font-size: 12px; padding: 3px 8px;');

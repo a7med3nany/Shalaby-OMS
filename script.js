@@ -140,7 +140,9 @@ async function handleNewOrderSubmit(e) {
 
     try {
 
-        const response = await fetch(CONFIG.API_URL, {
+        console.log(CONFIG.API_URL);
+
+const response = await fetch(CONFIG.API_URL, {
 
             method: "POST",
 

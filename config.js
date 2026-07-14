@@ -6,7 +6,7 @@ const CONFIG = {
     TOKEN: '',
     
     APP_NAME: 'Shalaby OMS',
-    APP_VERSION: '1.0',
+    APP_VERSION: '1.2',
     
     API_TIMEOUT: 30000,
     RETRY_ATTEMPTS: 3,

@@ -419,12 +419,15 @@ function getStatusClass(status) {
 }
 
 // ========================================
-// FIXED: handleUpdateStatus - sends to API
+// FIXED: handleUpdateStatus - with DEBUG
 // ========================================
 async function handleUpdateStatus(e) {
     e.preventDefault();
     
     const newStatus = document.getElementById('newStatus')?.value;
+    
+    console.log("DEBUG - newStatus:", newStatus);
+    console.log("DEBUG - currentOrder:", currentOrder);
     
     if (!newStatus) {
         alert('من فضلك اختر الحالة الجديدة');
@@ -433,8 +436,12 @@ async function handleUpdateStatus(e) {
     
     if (!currentOrder) {
         alert('لم يتم اختيار أوردر');
+        console.error("DEBUG - currentOrder is null!");
         return;
     }
+    
+    console.log("DEBUG - orderId:", currentOrder.orderId);
+    console.log("DEBUG - API_URL:", CONFIG.API_URL);
     
     // ✅ نبعت الطلب للـ API
     try {
@@ -444,7 +451,7 @@ async function handleUpdateStatus(e) {
         params.append('newStatus', newStatus);
         
         const apiUrl = CONFIG.API_URL + "?" + params.toString();
-        console.log("Update URL:", apiUrl);
+        console.log("DEBUG - Update URL:", apiUrl);
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT);
@@ -455,8 +462,10 @@ async function handleUpdateStatus(e) {
         });
         clearTimeout(timeoutId);
         
+        console.log("DEBUG - Response status:", response.status);
+        
         const result = await response.json();
-        console.log("Update Result:", result);
+        console.log("DEBUG - Update Result:", result);
         
         if (result.success) {
             // ✅ نحدّث الواجهة
@@ -473,10 +482,11 @@ async function handleUpdateStatus(e) {
         }
         
     } catch (err) {
-        console.error("Update Error:", err);
-        alert("تعذر الاتصال بالخادم");
+        console.error("DEBUG - Update Error:", err);
+        alert("تعذر الاتصال بالخادم: " + err.message);
     }
 }
+
 
 function showUpdateSuccessModal() {
     const modal = new bootstrap.Modal(document.getElementById('updateSuccessModal'));

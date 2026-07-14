@@ -94,7 +94,7 @@ function initializeNewOrderPage() {
     }
 }
 
-async function handleNewOrderSubmit(e) {
+
 async function handleNewOrderSubmit(e) {
 
     e.preventDefault();
